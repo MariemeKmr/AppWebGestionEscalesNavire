@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <title>Détails utilisateur</title>
+    <title>Détails du navire</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -31,17 +31,16 @@
             margin-bottom: 20px;
         }
 
-        ul {
-            list-style-type: none;
-            padding: 0;
+        .navire-details {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
         }
 
-        li {
-            padding: 15px;
-            margin-bottom: 15px;
-            background-color: #f9f9f9;
-            border-radius: 4px;
-            font-size: 18px;
+        .navire-details p {
+            margin: 10px 0;
+            font-size: 16px;
         }
 
         .btn-back {
@@ -63,18 +62,21 @@
 </head>
 <body>
     <jsp:include page="/includes/header.jsp">
-        <jsp:param name="title" value="Détails utilisateur"/>
+        <jsp:param name="title" value="Détails du navire"/>
     </jsp:include>
 
     <div class="content-container">
-        <h2>Détails de l'utilisateur</h2>
-        <ul>
-            <li><strong>ID :</strong> ${utilisateur.id}</li>
-            <li><strong>Nom complet :</strong> ${utilisateur.nomComplet}</li>
-            <li><strong>Email :</strong> ${utilisateur.email}</li>
-            <li><strong>Rôle :</strong> ${utilisateur.role}</li>
-        </ul>
-        <a href="${pageContext.request.contextPath}/utilisateur?action=list" class="btn-back">
+        <h2>Détails du navire</h2>
+        <div class="navire-details">
+            <p><strong>Numéro du navire :</strong> ${navire.numeroNavire}</p>
+            <p><strong>Nom du navire :</strong> ${navire.nomNavire}</p>
+            <p><strong>Longueur :</strong> ${navire.longueurNavire} mètres</p>
+            <p><strong>Largeur :</strong> ${navire.largeurNavire} mètres</p>
+            <p><strong>Volume :</strong> ${navire.volumeNavire} tonnes</p>
+            <p><strong>Tirant d'eau :</strong> ${navire.tiranEauNavire} mètres</p>
+            <p><strong>Consignataire :</strong> ${navire.consignataire.nomConsignataire}</p>
+        </div>
+        <a href="${pageContext.request.contextPath}/navire?action=list" class="btn-back">
             <i class="fas fa-arrow-left"></i> Retour à la liste
         </a>
     </div>

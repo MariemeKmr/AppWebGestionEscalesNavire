@@ -1,96 +1,122 @@
+<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
-<jsp:include page="/includes/header.jsp">
-    <jsp:param name="title" value="Liste des Consignataires"/>
-</jsp:include>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <title>Liste des consignataires</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 0;
+        }
 
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+        .content-container {
+            margin-top: 80px;
+            max-width: 1200px;
+            margin: 80px auto 20px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
 
-<style>
-    .card {
-        margin-top: 20px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    }
+        h2 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 20px;
+        }
 
-    .table-responsive {
-        margin-top: 20px;
-    }
+        .btn-new {
+            display: inline-block;
+            margin: 20px 0;
+            padding: 10px 15px;
+            background-color: #3498db;
+            color: white;
+            text-decoration: none;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
 
-    .btn-group {
-        display: flex;
-        gap: 5px;
-    }
+        .btn-new:hover {
+            background-color: #2980b9;
+        }
 
-    .btn {
-        white-space: nowrap;
-    }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+        }
 
-    .alert {
-        margin-top: 20px;
-    }
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
 
-    .fa-info-circle {
-        margin-right: 5px;
-    }
-</style>
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
 
-<div class="container">
-    <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2><i class="fas fa-users"></i> Liste des Consignataires</h2>
-                <a href="<c:url value='/consignataire/new'/>" class="btn btn-primary">
-                    <i class="fas fa-plus"></i> Nouveau Consignataire
-                </a>
-            </div>
+        tr:hover {
+            background-color: #f5f5f5;
+        }
 
-            <div class="card">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>ID</th>
-                                    <th>Raison Sociale</th>
-                                    <th>Adresse</th>
-                                    <th>Téléphone</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <c:forEach var="consignataire" items="${consignataires}">
-                                    <tr>
-                                        <td>${consignataire.idConsignataire}</td>
-                                        <td>${consignataire.raisonSociale}</td>
-                                        <td>${consignataire.adresse}</td>
-                                        <td>${consignataire.telephone}</td>
-                                        <td>
-                                            <div class="btn-group" role="group">
-                                                <a href="<c:url value='/consignataire/view/${consignataire.idConsignataire}'/>"
-                                                   class="btn btn-sm btn-info"><i class="fas fa-eye"></i> Voir</a>
-                                                <a href="<c:url value='/consignataire/edit/${consignataire.idConsignataire}'/>"
-                                                   class="btn btn-sm btn-warning"><i class="fas fa-edit"></i> Modifier</a>
-                                                <a href="<c:url value='/consignataire/delete/${consignataire.idConsignataire}'/>"
-                                                   class="btn btn-sm btn-danger"
-                                                   onclick="return confirm('Êtes-vous sûr de vouloir supprimer ce consignataire ?')">
-                                                    <i class="fas fa-trash"></i> Supprimer</a>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                </c:forEach>
-                            </tbody>
-                        </table>
-                    </div>
+        .actions a {
+            margin-right: 10px;
+            color: #3498db;
+            text-decoration: none;
+        }
 
-                    <c:if test="${empty consignataires}">
-                        <div class="alert alert-info text-center">
-                            <i class="fas fa-info-circle"></i> Aucun consignataire trouvé.
-                        </div>
-                    </c:if>
-                </div>
-            </div>
-        </div>
+        .actions a:hover {
+            color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <jsp:include page="/includes/header.jsp">
+        <jsp:param name="title" value="Liste des consignataires"/>
+    </jsp:include>
+
+    <div class="content-container">
+        <h2>Liste des consignataires</h2>
+        <a href="${pageContext.request.contextPath}/consignataire?action=new" class="btn-new">
+            <i class="fas fa-plus"></i> Ajouter un consignataire
+        </a>
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Raison Sociale</th>
+                    <th>Adresse</th>
+                    <th>TÃ©lÃ©phone</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <c:forEach var="consignataire" items="${consignataires}">
+                    <tr>
+                        <td>${consignataire.idConsignataire}</td>
+                        <td>${consignataire.raisonSociale}</td>
+                        <td>${consignataire.adresse}</td>
+                        <td>${consignataire.telephone}</td>
+                        <td class="actions">
+                            <a href="${pageContext.request.contextPath}/consignataire?action=view&idConsignataire=${consignataire.idConsignataire}" title="Voir"><i class="fas fa-eye"></i></a>
+                            <a href="${pageContext.request.contextPath}/consignataire?action=edit&idConsignataire=${consignataire.idConsignataire}" title="Modifier"><i class="fas fa-edit"></i></a>
+                            <a href="${pageContext.request.contextPath}/consignataire?action=delete&idConsignataire=${consignataire.idConsignataire}" title="Supprimer" onclick="return confirm('Supprimer ce consignataire ?');"><i class="fas fa-trash"></i></a>
+                        </td>
+                    </tr>
+                </c:forEach>
+            </tbody>
+        </table>
     </div>
-</div>
 
-<jsp:include page="/includes/footer.jsp"/>
+    <jsp:include page="/includes/footer.jsp"/>
+</body>
+</html>

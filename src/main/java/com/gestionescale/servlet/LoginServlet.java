@@ -4,7 +4,6 @@ import com.gestionescale.dao.UtilisateurDAO;
 import com.gestionescale.model.Utilisateur;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,7 +26,7 @@ public class LoginServlet extends HttpServlet {
         if (utilisateur != null) {
             HttpSession session = request.getSession();
             session.setAttribute("utilisateur", utilisateur);
-            response.sendRedirect(request.getContextPath() + "/jsp/dashboard.jsp");
+            request.getRequestDispatcher("/jsp/login.jsp").forward(request, response);
         } else {
             request.setAttribute("errorMessage", "Email ou mot de passe incorrect.");
             request.getRequestDispatcher(request.getContextPath() + "/jsp/login.jsp").forward(request, response);

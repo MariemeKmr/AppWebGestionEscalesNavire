@@ -16,7 +16,7 @@
         }
 
         .content-container {
-            margin-top: 80px; 
+            margin-top: 80px;
             max-width: 600px;
             margin: 80px auto 20px;
             padding: 20px;
@@ -41,7 +41,7 @@
             font-weight: bold;
         }
 
-        input[type="text"], input[type="email"], input[type="password"], select {
+        input[type="text"], input[type="tel"] {
             width: 100%;
             padding: 10px;
             margin-top: 5px;
@@ -84,33 +84,26 @@
 </head>
 <body>
     <jsp:include page="/includes/header.jsp">
-        <jsp:param name="title" value="Formulaire utilisateur"/>
+        <jsp:param name="title" value="Formulaire consignataire"/>
     </jsp:include>
 
     <div class="content-container">
         <h2><c:out value="${formTitle}"/></h2>
         <form method="post" action="${formAction}">
-            <input type="hidden" name="id" value="${utilisateur.id}"/>
-            <label for="nomComplet">Nom complet :</label>
-            <input type="text" id="nomComplet" name="nomComplet" value="${utilisateur.nomComplet}" required/>
+            <input type="hidden" name="idConsignataire" value="${consignataire.idConsignataire}"/>
 
-            <label for="email">Email :</label>
-            <input type="email" id="email" name="email" value="${utilisateur.email}" required/>
-			<label for="telephone">Téléphone :</label>
-			<input type="text" id="telephone" name="telephone" value="${utilisateur.telephone}" required/>
+            <label for="raisonSociale">Raison Sociale :</label>
+            <input type="text" id="raisonSociale" name="raisonSociale" value="${consignataire.raisonSociale}" required/>
 
-            <label for="motDePasse">Mot de passe :</label>
-            <input type="password" id="motDePasse" name="motDePasse" value="${utilisateur.motDePasse}" required/>
+            <label for="adresse">Adresse :</label>
+            <input type="text" id="adresse" name="adresse" value="${consignataire.adresse}" required/>
 
-            <label for="role">Rôle :</label>
-            <select id="role" name="role" required>
-                <option value="admin" ${utilisateur.role == 'admin' ? 'selected' : ''}>Admin</option>
-                <option value="agent" ${utilisateur.role == 'agent' ? 'selected' : ''}>Agent</option>
-            </select>
+            <label for="telephone">Téléphone :</label>
+            <input type="tel" id="telephone" name="telephone" value="${consignataire.telephone}" required/>
 
             <button type="submit">Enregistrer</button>
         </form>
-        <a href="${pageContext.request.contextPath}/utilisateur?action=list" class="btn-back">
+        <a href="${pageContext.request.contextPath}/consignataire?action=list" class="btn-back">
             <i class="fas fa-arrow-left"></i> Retour à la liste
         </a>
     </div>

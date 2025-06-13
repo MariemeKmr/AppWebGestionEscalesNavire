@@ -42,6 +42,7 @@ public class UtilisateurServlet extends HttpServlet {
             Utilisateur utilisateur = new Utilisateur();
             utilisateur.setNomComplet(request.getParameter("nomComplet"));
             utilisateur.setEmail(request.getParameter("email"));
+            utilisateur.setTelephone(request.getParameter("telephone"));
             utilisateur.setMotDePasse(request.getParameter("motDePasse"));
             utilisateur.setRole(request.getParameter("role"));
             service.addUtilisateur(utilisateur);
@@ -50,6 +51,7 @@ public class UtilisateurServlet extends HttpServlet {
             utilisateur.setId(Integer.parseInt(request.getParameter("id")));
             utilisateur.setNomComplet(request.getParameter("nomComplet"));
             utilisateur.setEmail(request.getParameter("email"));
+            utilisateur.setTelephone(request.getParameter("telephone"));
             utilisateur.setMotDePasse(request.getParameter("motDePasse"));
             utilisateur.setRole(request.getParameter("role"));
             service.updateUtilisateur(utilisateur);

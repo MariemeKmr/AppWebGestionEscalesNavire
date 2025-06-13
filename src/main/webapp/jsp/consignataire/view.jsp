@@ -4,7 +4,7 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <title>Détails utilisateur</title>
+    <title>Détails du consignataire</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -31,17 +31,16 @@
             margin-bottom: 20px;
         }
 
-        ul {
-            list-style-type: none;
-            padding: 0;
+        .consignataire-details {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
         }
 
-        li {
-            padding: 15px;
-            margin-bottom: 15px;
-            background-color: #f9f9f9;
-            border-radius: 4px;
-            font-size: 18px;
+        .consignataire-details p {
+            margin: 10px 0;
+            font-size: 16px;
         }
 
         .btn-back {
@@ -63,18 +62,18 @@
 </head>
 <body>
     <jsp:include page="/includes/header.jsp">
-        <jsp:param name="title" value="Détails utilisateur"/>
+        <jsp:param name="title" value="Détails du consignataire"/>
     </jsp:include>
 
     <div class="content-container">
-        <h2>Détails de l'utilisateur</h2>
-        <ul>
-            <li><strong>ID :</strong> ${utilisateur.id}</li>
-            <li><strong>Nom complet :</strong> ${utilisateur.nomComplet}</li>
-            <li><strong>Email :</strong> ${utilisateur.email}</li>
-            <li><strong>Rôle :</strong> ${utilisateur.role}</li>
-        </ul>
-        <a href="${pageContext.request.contextPath}/utilisateur?action=list" class="btn-back">
+        <h2>Détails du consignataire</h2>
+        <div class="consignataire-details">
+            <p><strong>ID :</strong> ${consignataire.idConsignataire}</p>
+            <p><strong>Raison Sociale :</strong> ${consignataire.raisonSociale}</p>
+            <p><strong>Adresse :</strong> ${consignataire.adresse}</p>
+            <p><strong>Téléphone :</strong> ${consignataire.telephone}</p>
+        </div>
+        <a href="${pageContext.request.contextPath}/consignataire?action=list" class="btn-back">
             <i class="fas fa-arrow-left"></i> Retour à la liste
         </a>
     </div>

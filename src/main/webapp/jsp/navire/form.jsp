@@ -16,7 +16,7 @@
         }
 
         .content-container {
-            margin-top: 80px; 
+            margin-top: 80px;
             max-width: 600px;
             margin: 80px auto 20px;
             padding: 20px;
@@ -41,7 +41,7 @@
             font-weight: bold;
         }
 
-        input[type="text"], input[type="email"], input[type="password"], select {
+        input[type="text"], input[type="number"], select {
             width: 100%;
             padding: 10px;
             margin-top: 5px;
@@ -84,33 +84,41 @@
 </head>
 <body>
     <jsp:include page="/includes/header.jsp">
-        <jsp:param name="title" value="Formulaire utilisateur"/>
+        <jsp:param name="title" value="Formulaire navire"/>
     </jsp:include>
 
     <div class="content-container">
         <h2><c:out value="${formTitle}"/></h2>
         <form method="post" action="${formAction}">
-            <input type="hidden" name="id" value="${utilisateur.id}"/>
-            <label for="nomComplet">Nom complet :</label>
-            <input type="text" id="nomComplet" name="nomComplet" value="${utilisateur.nomComplet}" required/>
+            <input type="hidden" name="numeroNavire" value="${navire.numeroNavire}"/>
 
-            <label for="email">Email :</label>
-            <input type="email" id="email" name="email" value="${utilisateur.email}" required/>
-			<label for="telephone">Téléphone :</label>
-			<input type="text" id="telephone" name="telephone" value="${utilisateur.telephone}" required/>
+            <label for="nomNavire">Nom du navire :</label>
+            <input type="text" id="nomNavire" name="nomNavire" value="${navire.nomNavire}" required/>
 
-            <label for="motDePasse">Mot de passe :</label>
-            <input type="password" id="motDePasse" name="motDePasse" value="${utilisateur.motDePasse}" required/>
+            <label for="longueurNavire">Longueur :</label>
+            <input type="number" id="longueurNavire" name="longueurNavire" value="${navire.longueurNavire}" required/>
 
-            <label for="role">Rôle :</label>
-            <select id="role" name="role" required>
-                <option value="admin" ${utilisateur.role == 'admin' ? 'selected' : ''}>Admin</option>
-                <option value="agent" ${utilisateur.role == 'agent' ? 'selected' : ''}>Agent</option>
+            <label for="largeurNavire">Largeur :</label>
+            <input type="number" id="largeurNavire" name="largeurNavire" value="${navire.largeurNavire}" required/>
+
+            <label for="volumeNavire">Volume :</label>
+            <input type="number" id="volumeNavire" name="volumeNavire" value="${navire.volumeNavire}" required/>
+
+            <label for="tiranEauNavire">Tirant d'eau :</label>
+            <input type="number" id="tiranEauNavire" name="tiranEauNavire" value="${navire.tiranEauNavire}" required/>
+
+            <label for="consignataire">Consignataire :</label>
+            <select id="consignataire" name="consignataire" required>
+                <c:forEach var="consignataire" items="${consignataires}">
+                    <option value="${consignataire.idConsignataire}" ${navire.consignataire.idConsignataire == consignataire.idConsignataire ? 'selected' : ''}>
+                        ${consignataire.nomConsignataire}
+                    </option>
+                </c:forEach>
             </select>
 
             <button type="submit">Enregistrer</button>
         </form>
-        <a href="${pageContext.request.contextPath}/utilisateur?action=list" class="btn-back">
+        <a href="${pageContext.request.contextPath}/navire?action=list" class="btn-back">
             <i class="fas fa-arrow-left"></i> Retour à la liste
         </a>
     </div>
