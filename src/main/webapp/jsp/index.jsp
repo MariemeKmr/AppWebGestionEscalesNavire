@@ -78,7 +78,7 @@
     <p>Veuillez vous connecter en tant qu'Administrateur ou Agent pour accéder à la gestion des escales et des navires.</p>
 
     <div class="btn-container">
-        <a href="login.jsp" class="btn-login">Se connecter</a>
+        <a href="${pageContext.request.contextPath}/jsp/login.jsp" class="btn-login">Se connecter</a>
     </div>
 
     <div class="footer">

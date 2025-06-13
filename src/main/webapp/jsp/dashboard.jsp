@@ -14,7 +14,7 @@
         nom = utilisateur.getNomComplet() != null ? utilisateur.getNomComplet() : utilisateur.getEmail();
         session.setAttribute("utilisateurNom", nom);
     } else {
-        response.sendRedirect("/jsp/login.jsp");
+        response.sendRedirect(request.getContextPath() + "/jsp/login.jsp");
         return;
     }
 %>
@@ -108,26 +108,26 @@
 </style>
 
 <div class="dashboard">
-    <h1>Bienvenue, <%= nom %> !</h1>
+    <h1>Tableau de bord, <%= nom %>.</h1>
     <p class="welcome-message">Vous êtes connecté en tant que <strong><%= role %></strong>.</p>
 
     <div class="dashboard-grid">
         <% if ("admin".equals(role)) { %>
             <div class="dashboard-card">
                 <i class="fas fa-users"></i>
-                <a href="<c:url value='/utilisateur/list'/>"><p>Gérer les utilisateurs</p></a>
+				<a href="${pageContext.request.contextPath}/utilisateur?action=list"><p>Gérer les utilisateurs</p></a>
             </div>
             <div class="dashboard-card">
                 <i class="fas fa-handshake"></i>
-                <a href="<c:url value='/consignataire/list'/>"><p>Gérer les consignataires</p></a>
+                <a href="${pageContext.request.contextPath}/consignataire/list/"><p>Gérer les consignataires</p></a>
             </div>
             <div class="dashboard-card">
                 <i class="fas fa-calendar-alt"></i>
-                <a href="<c:url value='/escale/list'/>"><p>Gérer les escales</p></a>
+                <a href="${pageContext.request.contextPath}/escale/list/"><p>Gérer les escales</p></a>
             </div>
             <div class="dashboard-card">
                 <i class="fas fa-ship"></i>
-                <a href="<c:url value='/navire/list'/>"><p>Gérer les navires</p></a>
+                <a href="${pageContext.request.contextPath}/navire/list/"><p>Gérer les navires</p></a>
             </div>
             <div class="dashboard-card">
                 <i class="fas fa-chart-line"></i>
@@ -135,21 +135,33 @@
             </div>
             <div class="dashboard-card">
                 <i class="fas fa-file-invoice"></i>
-                <a href="<c:url value='/bonpilotage/list'/>"><p>Bons de pilotage</p></a>
+                <a href="${pageContext.request.contextPath}/bonpilotage/"><p>Bons de pilotage</p></a>
             </div>
         <% } else if ("agent".equals(role)) { %>
-            <div class="dashboard-card">
-                <i class="fas fa-calendar-plus"></i>
-                <a href="<c:url value='/escale/new'/>"><p>Créer une escale</p></a>
-            </div>
-            <div class="dashboard-card">
-                <i class="fas fa-eye"></i>
-                <a href="<c:url value='/escale/list'/>"><p>Voir les escales</p></a>
-            </div>
-            <div class="dashboard-card">
-                <i class="fas fa-ship"></i>
-                <a href="<c:url value='/navire/new'/>"><p>Créer un navire</p></a>
-            </div>
+			<div class="dashboard-card">
+			    <i class="fas fa-calendar-plus"></i>
+			    <a href="${pageContext.request.contextPath}/escale/new"><p>Créer une escale</p></a>
+			</div>
+			<div class="dashboard-card">
+			    <i class="fas fa-eye"></i>
+			    <a href="${pageContext.request.contextPath}/escale/list/"><p>Voir les escales</p></a>
+			</div>
+			<div class="dashboard-card">
+			    <i class="fas fa-ship"></i>
+			    <a href="${pageContext.request.contextPath}/navire/new"><p>Créer un navire</p></a>
+			</div>
+			<div class="dashboard-card">
+			    <i class="fas fa-ship"></i>
+			    <a href="${pageContext.request.contextPath}/navire/list/"><p>Voir les navires</p></a>
+			</div>
+			<div class="dashboard-card">
+			    <i class="fas fa-file-alt"></i>
+			    <a href="${pageContext.request.contextPath}/bonpilotage/new"><p>Créer un bon de pilotage</p></a>
+			</div>
+			<div class="dashboard-card">
+			    <i class="fas fa-file-alt"></i>
+			    <a href="${pageContext.request.contextPath}/bonpilotage/"><p>Voir les bons de pilotage</p></a>
+			</div>
         <% } %>
     </div>
 </div>

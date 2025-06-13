@@ -86,7 +86,7 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
-            <a class="navbar-brand" href="/jsp/dashboard.jsp">
+            <a class="navbar-brand" href="${pageContext.request.contextPath}/jsp/dashboard.jsp">
                 <i class="fas fa-anchor nav-icon"></i> Gestion Escales
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">

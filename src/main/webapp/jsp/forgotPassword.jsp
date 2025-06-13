@@ -98,7 +98,7 @@
             <button type="submit">Envoyer le lien de réinitialisation</button>
         </form>
 
-        <a href="login.jsp" class="back-to-login">Retour à la page de connexion</a>
+        <a href="${pageContext.request.contextPath}/jsp/login.jsp" class="back-to-login">Retour à la page de connexion</a>
     </div>
 </body>
 </html>

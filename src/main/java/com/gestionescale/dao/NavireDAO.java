@@ -24,7 +24,7 @@ public class NavireDAO {
             stmt.setDouble(4, navire.getLargeurNavire());
             stmt.setDouble(5, navire.getVolumeNavire());
             stmt.setDouble(6, navire.getTiranEauNavire());
-            stmt.setString(7, navire.getConsignataire().getCodeConsignataire());
+            stmt.setString(7, navire.getConsignataire().getIdConsignataire());
 
             stmt.executeUpdate();
         }
@@ -50,7 +50,7 @@ public class NavireDAO {
                 navire.setTiranEauNavire(rs.getDouble("tiranEauNavire"));
 
                 String codeConsignataire = rs.getString("codeConsignataire");
-                Consignataire consignataire = consignataireDAO.getConsignataireParCode(codeConsignataire);
+                Consignataire consignataire = consignataireDAO.getIdConsignataire(idConsignataire);
                 navire.setConsignataire(consignataire);
             }
         }
@@ -76,7 +76,7 @@ public class NavireDAO {
                 navire.setTiranEauNavire(rs.getDouble("tiranEauNavire"));
 
                 String codeConsignataire = rs.getString("codeConsignataire");
-                Consignataire consignataire = consignataireDAO.getConsignataireParCode(codeConsignataire);
+                Consignataire consignataire = consignataireDAO.getIdConsignataire(codeConsignataire);
                 navire.setConsignataire(consignataire);
 
                 navires.add(navire);
@@ -97,7 +97,7 @@ public class NavireDAO {
             stmt.setDouble(3, navire.getLargeurNavire());
             stmt.setDouble(4, navire.getVolumeNavire());
             stmt.setDouble(5, navire.getTiranEauNavire());
-            stmt.setString(6, navire.getConsignataire().getCodeConsignataire());
+            stmt.setString(6, navire.getConsignataire().getIdConsignataire());
             stmt.setString(7, navire.getNumeroNavire());
 
             stmt.executeUpdate();

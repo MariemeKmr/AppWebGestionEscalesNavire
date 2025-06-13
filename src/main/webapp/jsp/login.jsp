@@ -96,7 +96,7 @@
             <i class="fas fa-anchor"></i>
         </div>
         <h2>Connexion</h2>
-        <form action="/LoginServlet" method="post">
+        <form action="${pageContext.request.contextPath}/LoginServlet" method="post">
             <label for="email">Adresse e-mail :</label>
             <input type="email" id="email" name="email" required>
 
@@ -106,7 +106,7 @@
             <button type="submit">Se connecter</button>
         </form>
 
-        <a href="forgotPassword.jsp" class="forgot-password">Mot de passe oublié ?</a>
+        <a href="${pageContext.request.contextPath}/jsp/forgotPassword.jsp" class="forgot-password">Mot de passe oublié ?</a>
         
         <% String error = (String) request.getAttribute("errorMessage");
            if(error != null) { %>

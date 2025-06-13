@@ -27,16 +27,16 @@ public class LoginServlet extends HttpServlet {
         if (utilisateur != null) {
             HttpSession session = request.getSession();
             session.setAttribute("utilisateur", utilisateur);
-            response.sendRedirect("/jsp/dashboard.jsp");
+            response.sendRedirect(request.getContextPath() + "/jsp/dashboard.jsp");
         } else {
             request.setAttribute("errorMessage", "Email ou mot de passe incorrect.");
-            request.getRequestDispatcher("/jsp/login.jsp").forward(request, response);
+            request.getRequestDispatcher(request.getContextPath() + "/jsp/login.jsp").forward(request, response);
         }
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        response.sendRedirect("/jsp/dashboard.jsp"); 
+        response.sendRedirect(request.getContextPath() + "/jsp/dashboard.jsp"); 
     }
 
 }

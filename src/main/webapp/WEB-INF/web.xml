@@ -80,4 +80,13 @@
     <servlet-name>LogoutServlet</servlet-name>
     <url-pattern>/LogoutServlet</url-pattern>
   </servlet-mapping>
+  <servlet>
+    <servlet-name>UtilisateurServlet</servlet-name>
+    <servlet-class>com.gestionescale.servlet.UtilisateurServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>UtilisateurServlet</servlet-name>
+    <url-pattern>/utilisateur</url-pattern>
+</servlet-mapping>
+  
 </web-app>
