@@ -1,7 +1,7 @@
 package com.gestionescale.dao.implementation;
 
 import com.gestionescale.util.DatabaseConnection;
-import com.gestionescale.dao.interfaces;
+import com.gestionescale.dao.interfaces.IFactureBonPilotageDAO;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;

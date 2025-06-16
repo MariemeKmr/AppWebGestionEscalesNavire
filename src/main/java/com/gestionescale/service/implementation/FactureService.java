@@ -14,19 +14,19 @@ public class FactureService implements IFactureService {
     private FactureDAO factureDAO;
     private BonPilotageDAO bonPilotageDAO;
 
-    public FactureServiceImpl() {
+    public FactureService() {
         this.factureDAO = new FactureDAO();
         this.bonPilotageDAO = new BonPilotageDAO();
     }
 
     public void genererFactureAPartirBonPilotage(int bonPilotageId) {
-        BonPilotage bon = bonPilotageDAO.getById(bonPilotageId);
+        BonPilotage bon = bonPilotageDAO.getBonPilotageParId(bonPilotageId);
         double montant = bon.getTypeMouvement().getPrixTypeMvt(); 
 
         Facture facture = new Facture();
         facture.setBonPilotageId(bonPilotageId);
-        facture.setMontant(montant);
-        facture.setDateFacturation(new Date());
+        facture.setMontantTotal(montant);
+        facture.setDateGeneration(new Date());
 
         factureDAO.save(facture);
     }

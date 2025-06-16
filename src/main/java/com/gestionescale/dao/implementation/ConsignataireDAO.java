@@ -1,4 +1,4 @@
-package com.gestionescale.dao.impl;
+package com.gestionescale.dao.implementation;
 
 import com.gestionescale.dao.interfaces.IConsignataireDAO;
 import com.gestionescale.model.Consignataire;

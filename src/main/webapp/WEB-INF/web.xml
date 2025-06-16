@@ -96,6 +96,4 @@
   <servlet-name>FactureServlet</servlet-name>
   <url-pattern>/facture/*</url-pattern>
 </servlet-mapping>
-
-  
 </web-app>
