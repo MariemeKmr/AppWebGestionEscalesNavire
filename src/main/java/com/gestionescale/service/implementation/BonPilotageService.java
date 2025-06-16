@@ -15,27 +15,22 @@ public class BonPilotageService implements IBonPilotageService {
         this.bonPilotageDAO = new BonPilotageDAO();
     }
 
-    @Override
     public void ajouterBonPilotage(BonPilotage bonPilotage) {
         bonPilotageDAO.ajouterBonPilotage(bonPilotage);
     }
 
-    @Override
     public BonPilotage getBonPilotageParId(int idMouvement) {
         return bonPilotageDAO.getBonPilotageParId(idMouvement);
     }
 
-    @Override
     public List<BonPilotage> getTousLesBonsPilotage() {
         return bonPilotageDAO.getTousLesBons();
     }
 
-    @Override
     public void modifierBonPilotage(BonPilotage bonPilotage) {
         bonPilotageDAO.modifierBon(bonPilotage);
     }
 
-    @Override
     public void supprimerBonPilotage(int idMouvement) {
         bonPilotageDAO.supprimerBon(idMouvement);
     }

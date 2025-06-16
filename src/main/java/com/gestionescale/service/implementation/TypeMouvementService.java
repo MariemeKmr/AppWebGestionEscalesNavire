@@ -15,27 +15,22 @@ public class TypeMouvementService implements TypeMouvementService {
         this.typeMouvementDAO = new TypeMouvementDAO();
     }
 
-    @Override
     public void ajouterTypeMouvement(TypeMouvement typeMouvement) {
         typeMouvementDAO.ajouter(typeMouvement);
     }
 
-    @Override
     public void modifierTypeMouvement(TypeMouvement typeMouvement) {
         typeMouvementDAO.modifier(typeMouvement);
     }
 
-    @Override
     public void supprimerTypeMouvement(String codeTypeMvt) {
         typeMouvementDAO.supprimer(codeTypeMvt);
     }
 
-    @Override
     public TypeMouvement getTypeMouvementByCode(String codeTypeMvt) {
         return typeMouvementDAO.getByCode(codeTypeMvt);
     }
 
-    @Override
     public List<TypeMouvement> getAllTypeMouvements() {
         return typeMouvementDAO.getAll();
     }

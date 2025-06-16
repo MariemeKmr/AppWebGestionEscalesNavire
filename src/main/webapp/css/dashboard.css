@@ -1,0 +1,79 @@
+    body {
+        font-family: 'Arial', sans-serif;
+        background-color: #f4f7f9;
+        margin: 0;
+        padding: 0;
+        color: #333;
+    }
+
+    .dashboard {
+        padding: 40px 20px;
+        max-width: 1200px;
+        margin: auto;
+    }
+
+    h1 {
+        color: #2c3e50;
+        text-align: center;
+        margin-bottom: 10px;
+    }
+
+    .welcome-message {
+        text-align: center;
+        font-size: 18px;
+        margin-bottom: 30px;
+        color: #7f8c8d;
+    }
+
+    .dashboard-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+        margin-top: 30px;
+    }
+
+    .dashboard-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        transition: all 0.3s ease;
+        border: 1px solid #e0e0e0;
+        height: 150px; /* Hauteur fixe pour éviter que les cartes ne deviennent trop longues */
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        border-color: #3498db;
+    }
+
+    .dashboard-card a {
+        color: #2c3e50;
+        text-decoration: none;
+        font-weight: bold;
+        margin-top: 10px;
+    }
+
+    .dashboard-card i {
+        font-size: 36px;
+        color: #3498db;
+        margin-bottom: 10px;
+    }
+
+    .dashboard-card p {
+        margin: 10px 0;
+        font-size: 16px;
+    }
+
+    .dashboard-card:hover i {
+        color: #2980b9;
+    }
+
+    .dashboard-card:hover a {
+        color: #2980b9;
+    }

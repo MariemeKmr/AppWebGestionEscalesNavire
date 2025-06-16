@@ -88,5 +88,14 @@
     <servlet-name>UtilisateurServlet</servlet-name>
     <url-pattern>/utilisateur</url-pattern>
 </servlet-mapping>
+<servlet>
+  <servlet-name>FactureServlet</servlet-name>
+  <servlet-class>com.gestionescale.servlet.FactureServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+  <servlet-name>FactureServlet</servlet-name>
+  <url-pattern>/facture/*</url-pattern>
+</servlet-mapping>
+
   
 </web-app>
