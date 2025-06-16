@@ -108,13 +108,12 @@
             <input type="number" id="tiranEauNavire" name="tiranEauNavire" value="${navire.tiranEauNavire}" required/>
 
             <label for="consignataire">Consignataire :</label>
-            <select id="consignataire" name="consignataire" required>
-                <c:forEach var="consignataire" items="${consignataires}">
-                    <option value="${consignataire.idConsignataire}" ${navire.consignataire.idConsignataire == consignataire.idConsignataire ? 'selected' : ''}>
-                        ${consignataire.nomConsignataire}
-                    </option>
-                </c:forEach>
-            </select>
+			<label>Raison sociale consignataire</label>
+			<input type="text" name="raisonSociale" required />
+			<label>Adresse consignataire</label>
+			<input type="text" name="adresseConsignataire" required />
+			<label>Téléphone consignataire</label>
+			<input type="text" name="telephoneConsignataire" required />
 
             <button type="submit">Enregistrer</button>
         </form>

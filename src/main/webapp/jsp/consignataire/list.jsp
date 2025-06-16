@@ -86,9 +86,6 @@
 
     <div class="content-container">
         <h2>Liste des consignataires</h2>
-        <a href="${pageContext.request.contextPath}/consignataire?action=new" class="btn-new">
-            <i class="fas fa-plus"></i> Ajouter un consignataire
-        </a>
         <table>
             <thead>
                 <tr>
@@ -109,7 +106,6 @@
                         <td class="actions">
                             <a href="${pageContext.request.contextPath}/consignataire?action=view&idConsignataire=${consignataire.idConsignataire}" title="Voir"><i class="fas fa-eye"></i></a>
                             <a href="${pageContext.request.contextPath}/consignataire?action=edit&idConsignataire=${consignataire.idConsignataire}" title="Modifier"><i class="fas fa-edit"></i></a>
-                            <a href="${pageContext.request.contextPath}/consignataire?action=delete&idConsignataire=${consignataire.idConsignataire}" title="Supprimer" onclick="return confirm('Supprimer ce consignataire ?');"><i class="fas fa-trash"></i></a>
                         </td>
                     </tr>
                 </c:forEach>

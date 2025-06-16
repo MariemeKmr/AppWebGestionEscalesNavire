@@ -32,8 +32,8 @@ public class ConsignataireServlet extends jakarta.servlet.http.HttpServlet {
                 case "/insert":
                     insertConsignataire(request, response);
                     break;
-                case "/delete":
-                    deleteConsignataire(request, response);
+                case "/view":
+                    showViewConsignataire(request, response);
                     break;
                 case "/edit":
                     showEditForm(request, response);
@@ -55,6 +55,14 @@ public class ConsignataireServlet extends jakarta.servlet.http.HttpServlet {
         request.getRequestDispatcher("/jsp/consignataire/list.jsp").forward(request, response);
     }
 
+    private void showViewConsignataire(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        int id = Integer.parseInt(request.getParameter("idConsignataire"));
+        Consignataire consignataire = consignataireDAO.getIdConsignataires(id);
+        request.setAttribute("consignataire", consignataire);
+        request.getRequestDispatcher("/jsp/consignataire/detail.jsp").forward(request, response);
+    }
+
     private void showNewForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.getRequestDispatcher("/jsp/consignataire/form.jsp").forward(request, response);
@@ -71,14 +79,14 @@ public class ConsignataireServlet extends jakarta.servlet.http.HttpServlet {
         newConsignataire.setAdresse(adresse);
         newConsignataire.setTelephone(telephone);
 
-        consignataireDAO.addConsignataire(newConsignataire);
+        consignataireDAO.save(newConsignataire);
         response.sendRedirect(request.getContextPath() + "/consignataire/");
     }
 
     private void showEditForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         int id = Integer.parseInt(request.getParameter("id"));
-        Consignataire existingConsignataire = consignataireDAO.getConsignataireById(id);
+        Consignataire existingConsignataire = consignataireDAO.getIdConsignataires(id);
         request.setAttribute("consignataire", existingConsignataire);
         request.getRequestDispatcher("/jsp/consignataire/form.jsp").forward(request, response);
     }
@@ -94,11 +102,5 @@ public class ConsignataireServlet extends jakarta.servlet.http.HttpServlet {
         consignataireDAO.updateConsignataire(consignataire);
         response.sendRedirect(request.getContextPath() + "/consignataire/");
     }
-
-    private void deleteConsignataire(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
-        int id = Integer.parseInt(request.getParameter("id"));
-        consignataireDAO.deleteConsignataire(id);
-        response.sendRedirect(request.getContextPath() + "/consignataire/");
-    }
 }
+

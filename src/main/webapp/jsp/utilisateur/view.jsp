@@ -69,9 +69,9 @@
     <div class="content-container">
         <h2>Détails de l'utilisateur</h2>
         <ul>
-            <li><strong>ID :</strong> ${utilisateur.id}</li>
             <li><strong>Nom complet :</strong> ${utilisateur.nomComplet}</li>
-            <li><strong>Email :</strong> ${utilisateur.email}</li>
+            <li><strong>Email :</strong> ${utilisateur.email}</li>            
+            <li><strong>Téléphone :</strong> ${utilisateur.telephone}</li>
             <li><strong>Rôle :</strong> ${utilisateur.role}</li>
         </ul>
         <a href="${pageContext.request.contextPath}/utilisateur?action=list" class="btn-back">

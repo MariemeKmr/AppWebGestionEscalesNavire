@@ -8,6 +8,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <style>
+        body {
+            margin: 0;
+            font-family: 'Arial', sans-serif;
+        }
+
         .navbar {
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
             padding: 10px 0;
@@ -17,50 +22,50 @@
         .navbar-brand {
             font-weight: bold;
             font-size: 1.5rem;
+            color: white;
         }
 
         .nav-icon {
             margin-right: 8px;
         }
 
-        .user-menu img {
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
         .dropdown-menu {
-            display: block;
+            display: none;
             position: absolute;
             right: 0;
-            left: auto;
-            min-width: 150px;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s;
+            background-color: white;
+            min-width: 160px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
         }
 
         .dropdown:hover .dropdown-menu {
-            opacity: 1;
-            visibility: visible;
+            display: block;
         }
 
         .dropdown-item {
-            padding: 8px 20px;
+            display: block;
+            width: 100%;
+            padding: 8px 16px;
+            clear: both;
+            font-weight: 400;
+            color: #212529;
+            text-align: inherit;
+            text-decoration: none;
+            white-space: nowrap;
+            background-color: transparent;
+            border: 0;
         }
 
-        .dropdown-item i {
-            margin-right: 10px;
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
         }
 
-        .navbar-nav .nav-link {
-            display: flex;
-            align-items: center;
-        }
-
-        .navbar-toggler {
-            border: none;
+        .dropdown-divider {
+            height: 0;
+            margin: 0.5rem 0;
+            overflow: hidden;
+            border-top: 1px solid rgba(0, 0, 0, 0.1);
         }
 
         .notification-icon {
@@ -100,8 +105,8 @@
                             <span class="badge">3</span>
                         </a>
                     </li>
-                    <li class="nav-item dropdown user-menu">
-                        <a class="nav-link" href="#" id="navbarDropdown" role="button">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button">
                             <i class="fas fa-user nav-icon"></i>
                             <span><%= session.getAttribute("utilisateurNom") %></span>
                         </a>

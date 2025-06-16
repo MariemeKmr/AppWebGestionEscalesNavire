@@ -74,7 +74,7 @@
             <p><strong>Largeur :</strong> ${navire.largeurNavire} mètres</p>
             <p><strong>Volume :</strong> ${navire.volumeNavire} tonnes</p>
             <p><strong>Tirant d'eau :</strong> ${navire.tiranEauNavire} mètres</p>
-            <p><strong>Consignataire :</strong> ${navire.consignataire.nomConsignataire}</p>
+            <p><strong>Consignataire :</strong> ${navire.consignataire.raisonSociale}</p>
         </div>
         <a href="${pageContext.request.contextPath}/navire?action=list" class="btn-back">
             <i class="fas fa-arrow-left"></i> Retour à la liste

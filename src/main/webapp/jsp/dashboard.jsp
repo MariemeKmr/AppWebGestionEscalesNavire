@@ -135,7 +135,7 @@
             </div>
             <div class="dashboard-card">
                 <i class="fas fa-file-invoice"></i>
-                <a href="${pageContext.request.contextPath}/bonpilotage/"><p>Bons de pilotage</p></a>
+                <a href="#"><p>Bons de pilotage</p></a>
             </div>
         <% } else if ("agent".equals(role)) { %>
 			<div class="dashboard-card">
