@@ -17,11 +17,24 @@
     <div class="content-container">
         <h2>Détails du consignataire</h2>
         <div class="consignataire-details">
-            <p><strong>ID :</strong> ${consignataire.idConsignataire}</p>
             <p><strong>Raison Sociale :</strong> ${consignataire.raisonSociale}</p>
             <p><strong>Adresse :</strong> ${consignataire.adresse}</p>
             <p><strong>Téléphone :</strong> ${consignataire.telephone}</p>
         </div>
+        
+        <h3>Navires associés</h3>
+		<c:choose>
+		    <c:when test="${empty navires}">
+		        <p>Aucun navire associé à ce consignataire.</p>
+		    </c:when>
+		    <c:otherwise>
+		        <ul>
+		            <c:forEach var="navire" items="${navires}">
+		                <li>${navire.numeroNavire} - ${navire.nomNavire}</li>
+		            </c:forEach>
+		        </ul>
+		    </c:otherwise>
+		</c:choose>
         <a href="${pageContext.request.contextPath}/consignataire?action=list" class="btn-back">
             <i class="fas fa-arrow-left"></i> Retour à la liste
         </a>

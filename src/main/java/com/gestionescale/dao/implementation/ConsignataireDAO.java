@@ -16,7 +16,6 @@ public class ConsignataireDAO implements IConsignataireDAO {
         this.connection = DatabaseConnection.getConnection();
     }
 
-    @Override
     public List<Consignataire> getAllConsignataires() {
         List<Consignataire> list = new ArrayList<>();
         String sql = "SELECT * FROM consignataire";
@@ -39,7 +38,6 @@ public class ConsignataireDAO implements IConsignataireDAO {
         return list;
     }
 
-    @Override
     public Consignataire getIdConsignataires(int idConsignataire) {
         Consignataire consignataire = null;
         String sql = "SELECT * FROM consignataire WHERE idConsignataire = ?";
@@ -62,7 +60,6 @@ public class ConsignataireDAO implements IConsignataireDAO {
         return consignataire;
     }
 
-    @Override
     public void save(Consignataire consignataire) {
         String sql = "INSERT INTO consignataire (raisonSociale, adresse, telephone) VALUES (?, ?, ?)";
 
@@ -76,10 +73,8 @@ public class ConsignataireDAO implements IConsignataireDAO {
         }
     }
 
-    @Override
     public void updateConsignataire(Consignataire consignataire) {
         String sql = "UPDATE consignataire SET raisonSociale = ?, adresse = ?, telephone = ? WHERE idConsignataire = ?";
-
         try (PreparedStatement ps = connection.prepareStatement(sql)) {
             ps.setString(1, consignataire.getRaisonSociale());
             ps.setString(2, consignataire.getAdresse());
@@ -90,8 +85,7 @@ public class ConsignataireDAO implements IConsignataireDAO {
             e.printStackTrace();
         }
     }
-
-    @Override
+    
     public int ajouterConsignataireEtRetournerId(Consignataire consignataire) {
         int id = -1;
         String sql = "INSERT INTO consignataire (raisonSociale, adresse, telephone) VALUES (?, ?, ?)";

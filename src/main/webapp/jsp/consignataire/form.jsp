@@ -17,7 +17,10 @@
     <div class="content-container">
         <h2><c:out value="${formTitle}"/></h2>
         <form method="post" action="${formAction}">
-            <input type="hidden" name="idConsignataire" value="${consignataire.idConsignataire}"/>
+            <input type="hidden" name="action" value="${formActionType}" />
+            <c:if test="${not empty consignataire.idConsignataire}">
+                <input type="hidden" name="idConsignataire" value="${consignataire.idConsignataire}"/>
+            </c:if>
 
             <label for="raisonSociale">Raison Sociale :</label>
             <input type="text" id="raisonSociale" name="raisonSociale" value="${consignataire.raisonSociale}" required/>

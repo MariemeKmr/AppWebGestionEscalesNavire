@@ -115,4 +115,24 @@ public class NavireDAO implements INavireDAO {
             stmt.executeUpdate();
         }
     }
+    
+    public List<Navire> getNaviresByConsignataire(int idConsignataire) {
+        List<Navire> navires = new ArrayList<>();
+        String sql = "SELECT * FROM navire WHERE idConsignataire = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, idConsignataire);
+            try (ResultSet rs = ps.executeQuery()) {
+                while (rs.next()) {
+                    Navire n = new Navire();
+                    n.setNumeroNavire(rs.getString("numeroNavire"));
+                    n.setNomNavire(rs.getString("nomNavire"));
+                    navires.add(n);
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return navires;
+    }
 }

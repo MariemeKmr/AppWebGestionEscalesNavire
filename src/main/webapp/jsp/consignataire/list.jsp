@@ -34,9 +34,9 @@
                         <td>${consignataire.adresse}</td>
                         <td>${consignataire.telephone}</td>
                         <td class="actions">
-                            <a href="${pageContext.request.contextPath}/consignataire?action=view&idConsignataire=${consignataire.idConsignataire}" title="Voir"><i class="fas fa-eye"></i></a>
-                            <a href="${pageContext.request.contextPath}/consignataire?action=edit&idConsignataire=${consignataire.idConsignataire}" title="Modifier"><i class="fas fa-edit"></i></a>
-                        </td>
+							<a href="${pageContext.request.contextPath}/consignataire?action=view&idConsignataire=${consignataire.idConsignataire}" title="Voir"><i class="fas fa-eye"></i></a>
+							<a href="${pageContext.request.contextPath}/consignataire?action=edit&idConsignataire=${consignataire.idConsignataire}" title="Modifier"><i class="fas fa-edit"></i></a>        
+       			         </td>
                     </tr>
                 </c:forEach>
             </tbody>
