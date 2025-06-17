@@ -5,6 +5,7 @@ import com.gestionescale.dao.implementation.BonPilotageDAO;
 import com.gestionescale.model.BonPilotage;
 import com.gestionescale.service.interfaces.IBonPilotageService;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class BonPilotageService implements IBonPilotageService {
@@ -16,22 +17,42 @@ public class BonPilotageService implements IBonPilotageService {
     }
 
     public void ajouterBonPilotage(BonPilotage bonPilotage) {
-        bonPilotageDAO.ajouterBonPilotage(bonPilotage);
+        try {
+            bonPilotageDAO.ajouterBonPilotage(bonPilotage);
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de l’ajout du bon de pilotage", e);
+        }
     }
 
     public BonPilotage getBonPilotageParId(int idMouvement) {
-        return bonPilotageDAO.getBonPilotageParId(idMouvement);
+        try {
+            return bonPilotageDAO.getBonPilotageParId(idMouvement);
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de la récupération du bon de pilotage", e);
+        }
     }
 
     public List<BonPilotage> getTousLesBonsPilotage() {
-        return bonPilotageDAO.getTousLesBons();
+        try {
+            return bonPilotageDAO.getTousLesBons();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de la récupération de la liste des bons de pilotage", e);
+        }
     }
 
     public void modifierBonPilotage(BonPilotage bonPilotage) {
-        bonPilotageDAO.modifierBon(bonPilotage);
+        try {
+            bonPilotageDAO.modifierBon(bonPilotage);
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de la modification du bon de pilotage", e);
+        }
     }
 
     public void supprimerBonPilotage(int idMouvement) {
-        bonPilotageDAO.supprimerBon(idMouvement);
+        try {
+            bonPilotageDAO.supprimerBon(idMouvement);
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de la suppression du bon de pilotage", e);
+        }
     }
 }

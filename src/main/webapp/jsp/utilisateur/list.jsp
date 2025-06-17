@@ -14,7 +14,7 @@
         <jsp:param name="title" value="Liste des utilisateurs"/>
     </jsp:include>
 
-    <div class="container">
+    <div class="content-container">
         <h2>Liste des utilisateurs</h2>
         <a href="${pageContext.request.contextPath}/utilisateur?action=new" class="btn-new">
             <i class="fas fa-plus"></i> Ajouter un utilisateur
@@ -45,6 +45,9 @@
                 </c:forEach>
             </tbody>
         </table>
+        <a href="${pageContext.request.contextPath}/jsp/dashboard.jsp" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Retour à l'acceuil
+        </a>
     </div>
 
     <jsp:include page="/includes/footer.jsp"/>

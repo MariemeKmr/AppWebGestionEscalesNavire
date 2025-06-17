@@ -5,6 +5,7 @@ import com.gestionescale.dao.implementation.NavireDAO;
 import com.gestionescale.model.Navire;
 import com.gestionescale.service.interfaces.INavireService;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class NavireService implements INavireService {
@@ -17,26 +18,46 @@ public class NavireService implements INavireService {
 
     @Override
     public void ajouterNavire(Navire navire) {
-        navireDAO.ajouterNavire(navire);
+        try {
+            navireDAO.ajouterNavire(navire);
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de l'ajout du navire", e);
+        }
     }
 
     @Override
     public Navire getNavireParNumero(String numeroNavire) {
-        return navireDAO.getNavireParNumero(numeroNavire);
+        try {
+            return navireDAO.getNavireParNumero(numeroNavire);
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de la récupération du navire", e);
+        }
     }
 
     @Override
     public List<Navire> getTousLesNavires() {
-        return navireDAO.getTousLesNavires();
+        try {
+            return navireDAO.getTousLesNavires();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de la récupération de la liste des navires", e);
+        }
     }
 
     @Override
     public void modifierNavire(Navire navire) {
-        navireDAO.modifierNavire(navire);
+        try {
+            navireDAO.modifierNavire(navire);
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de la modification du navire", e);
+        }
     }
 
     @Override
     public void supprimerNavire(String numeroNavire) {
-        navireDAO.supprimerNavire(numeroNavire);
+        try {
+            navireDAO.supprimerNavire(numeroNavire);
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de la suppression du navire", e);
+        }
     }
 }

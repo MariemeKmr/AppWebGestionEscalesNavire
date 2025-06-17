@@ -1,21 +1,25 @@
 package com.gestionescale.servlet;
 
-import com.gestionescale.dao.EscaleDAO;
+import com.gestionescale.dao.implementation.EscaleDAO;
+import com.gestionescale.dao.implementation.NavireDAO;
 import com.gestionescale.model.Escale;
 import com.gestionescale.model.Navire;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 
 public class EscaleServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private EscaleDAO escaleDAO;
+    private NavireDAO navireDAO;
 
     @Override
     public void init() {
         escaleDAO = new EscaleDAO();
+        navireDAO = new NavireDAO();
     }
 
     @Override
@@ -54,9 +58,13 @@ public class EscaleServlet extends HttpServlet {
 
     private void listEscales(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        List<Escale> escales = escaleDAO.getAllEscales();
-        request.setAttribute("escales", escales);
-        request.getRequestDispatcher("/jsp/escale/list.jsp").forward(request, response);
+        try {
+            List<Escale> escales = escaleDAO.getToutesLesEscales();
+            request.setAttribute("escales", escales);
+            request.getRequestDispatcher("/jsp/escale/list.jsp").forward(request, response);
+        } catch (SQLException e) {
+            throw new ServletException("Erreur lors de la récupération des escales", e);
+        }
     }
 
     private void showNewForm(HttpServletRequest request, HttpServletResponse response)
@@ -67,22 +75,27 @@ public class EscaleServlet extends HttpServlet {
     private void insertEscale(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         try {
-            int idNavire = Integer.parseInt(request.getParameter("idNavire"));
+            String numeroEscale = request.getParameter("numeroEscale");
+            String numeroNavire = request.getParameter("numeroNavire"); // Doit être un String !
             String debutEscale = request.getParameter("debutEscale");
             String finEscale = request.getParameter("finEscale");
             double prixSejour = Double.parseDouble(request.getParameter("prixSejour"));
             String zone = request.getParameter("zone");
-            String consignataire = request.getParameter("consignataire");
+            // Consignataire à gérer selon ton formulaire
+
+            Navire navire = navireDAO.getNavireParNumero(numeroNavire);
+            // Ici, il faudrait aussi récupérer le Consignataire si besoin
 
             Escale escale = new Escale();
-            escale.setMyNavire(new Navire(idNavire)); // Navire déjà existant
+            escale.setNumeroEscale(numeroEscale);
+            escale.setMyNavire(navire);
             escale.setDebutEscale(java.sql.Date.valueOf(debutEscale));
             escale.setFinEscale(java.sql.Date.valueOf(finEscale));
             escale.setPrixSejour(prixSejour);
             escale.setZone(zone);
-            escale.setConsignataire(consignataire);
+            // escale.setConsignataire(consignataire);
 
-            escaleDAO.addEscale(escale);
+            escaleDAO.ajouterEscale(escale);
             response.sendRedirect(request.getContextPath() + "/escale/");
         } catch (Exception e) {
             e.printStackTrace();
@@ -92,33 +105,39 @@ public class EscaleServlet extends HttpServlet {
 
     private void showEditForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int id = Integer.parseInt(request.getParameter("id"));
-        Escale escale = escaleDAO.getEscaleById(id);
-        request.setAttribute("escale", escale);
-        request.getRequestDispatcher("/jsp/escale/form.jsp").forward(request, response);
+        String numeroEscale = request.getParameter("numeroEscale");
+        try {
+            Escale escale = escaleDAO.getEscaleParNumero(numeroEscale);
+            request.setAttribute("escale", escale);
+            request.getRequestDispatcher("/jsp/escale/form.jsp").forward(request, response);
+        } catch (SQLException e) {
+            throw new ServletException("Erreur lors de la récupération de l'escale", e);
+        }
     }
 
     private void updateEscale(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         try {
-            int id = Integer.parseInt(request.getParameter("id"));
-            int idNavire = Integer.parseInt(request.getParameter("idNavire"));
+            String numeroEscale = request.getParameter("numeroEscale");
+            String numeroNavire = request.getParameter("numeroNavire");
             String debutEscale = request.getParameter("debutEscale");
             String finEscale = request.getParameter("finEscale");
             double prixSejour = Double.parseDouble(request.getParameter("prixSejour"));
             String zone = request.getParameter("zone");
-            String consignataire = request.getParameter("consignataire");
+            // Consignataire à gérer
+
+            Navire navire = navireDAO.getNavireParNumero(numeroNavire);
 
             Escale escale = new Escale();
-            escale.setNumeroEscale(id);
-            escale.setMyNavire(new Navire(idNavire));
+            escale.setNumeroEscale(numeroEscale);
+            escale.setMyNavire(navire);
             escale.setDebutEscale(java.sql.Date.valueOf(debutEscale));
             escale.setFinEscale(java.sql.Date.valueOf(finEscale));
             escale.setPrixSejour(prixSejour);
             escale.setZone(zone);
-            escale.setConsignataire(consignataire);
+            // escale.setConsignataire(consignataire);
 
-            escaleDAO.updateEscale(escale);
+            escaleDAO.modifierEscale(escale);
             response.sendRedirect(request.getContextPath() + "/escale/");
         } catch (Exception e) {
             e.printStackTrace();
@@ -128,16 +147,25 @@ public class EscaleServlet extends HttpServlet {
 
     private void deleteEscale(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
-        int id = Integer.parseInt(request.getParameter("id"));
-        escaleDAO.deleteEscale(id);
-        response.sendRedirect(request.getContextPath() + "/escale/");
+        String numeroEscale = request.getParameter("numeroEscale");
+        try {
+            escaleDAO.supprimerEscale(numeroEscale);
+            response.sendRedirect(request.getContextPath() + "/escale/");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Erreur lors de la suppression.");
+        }
     }
 
     private void showDetails(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        int id = Integer.parseInt(request.getParameter("id"));
-        Escale escale = escaleDAO.getEscaleById(id);
-        request.setAttribute("escale", escale);
-        request.getRequestDispatcher("/jsp/escale/detail.jsp").forward(request, response);
+        String numeroEscale = request.getParameter("numeroEscale");
+        try {
+            Escale escale = escaleDAO.getEscaleParNumero(numeroEscale);
+            request.setAttribute("escale", escale);
+            request.getRequestDispatcher("/jsp/escale/detail.jsp").forward(request, response);
+        } catch (SQLException e) {
+            throw new ServletException("Erreur lors de la récupération de l'escale", e);
+        }
     }
 }

@@ -7,7 +7,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import com.gestionescale.dao.ConsignataireDAO;
+import com.gestionescale.dao.implementation.*;
 import com.gestionescale.model.Consignataire;
 
 public class ConsignataireServlet extends jakarta.servlet.http.HttpServlet {

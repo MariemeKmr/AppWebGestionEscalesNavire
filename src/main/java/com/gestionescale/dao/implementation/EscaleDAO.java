@@ -16,7 +16,7 @@ public class EscaleDAO implements IEscaleDAO {
 
     @Override
     public void ajouterEscale(Escale escale) throws SQLException {
-        String sql = "INSERT INTO Escale (numeroEscale, debutEscale, finEscale, numeroNavire, prixSejour, codeConsignataire, zone) VALUES (?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Escale (numeroEscale, debutEscale, finEscale, nomNavire, prixSejour, codeConsignataire, zone) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -24,7 +24,7 @@ public class EscaleDAO implements IEscaleDAO {
             stmt.setString(1, escale.getNumeroEscale());
             stmt.setDate(2, new java.sql.Date(escale.getDebutEscale().getTime()));
             stmt.setDate(3, new java.sql.Date(escale.getFinEscale().getTime()));
-            stmt.setString(4, escale.getMyNavire().getNumeroNavire());
+            stmt.setString(4, escale.getMyNavire().getNomNavire());
             stmt.setDouble(5, escale.getPrixSejour());
             stmt.setInt(6, escale.getConsignataire().getIdConsignataire());
             stmt.setString(7, escale.getZone());
@@ -53,7 +53,7 @@ public class EscaleDAO implements IEscaleDAO {
                 escale.setZone(rs.getString("zone"));
 
                 // Charger le Navire associé
-                Navire navire = navireDAO.getNavireParNumero(rs.getString("numeroNavire"));
+                Navire navire = navireDAO.getNavireParNumero(rs.getString("nomNavire"));
                 escale.setMyNavire(navire);
 
                 // Consignataire (chargé depuis le navire ou selon besoin)
@@ -83,7 +83,7 @@ public class EscaleDAO implements IEscaleDAO {
                 escale.setPrixSejour(rs.getDouble("prixSejour"));
                 escale.setZone(rs.getString("zone"));
 
-                Navire navire = navireDAO.getNavireParNumero(rs.getString("numeroNavire"));
+                Navire navire = navireDAO.getNavireParNumero(rs.getString("nomNavire"));
                 escale.setMyNavire(navire);
 
                 if (navire != null) {
@@ -99,14 +99,14 @@ public class EscaleDAO implements IEscaleDAO {
 
     @Override
     public void modifierEscale(Escale escale) throws SQLException {
-        String sql = "UPDATE Escale SET debutEscale = ?, finEscale = ?, numeroNavire = ?, prixSejour = ?, codeConsignataire = ?, zone = ? WHERE numeroEscale = ?";
+        String sql = "UPDATE Escale SET debutEscale = ?, finEscale = ?, nomNavire = ?, prixSejour = ?, codeConsignataire = ?, zone = ? WHERE numeroEscale = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
 
             stmt.setDate(1, new java.sql.Date(escale.getDebutEscale().getTime()));
             stmt.setDate(2, new java.sql.Date(escale.getFinEscale().getTime()));
-            stmt.setString(3, escale.getMyNavire().getNumeroNavire());
+            stmt.setString(3, escale.getMyNavire().getNomNavire());
             stmt.setDouble(4, escale.getPrixSejour());
             stmt.setInt(5, escale.getConsignataire().getIdConsignataire());
             stmt.setString(6, escale.getZone());

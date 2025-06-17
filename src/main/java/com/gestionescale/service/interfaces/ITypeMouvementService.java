@@ -1,9 +1,9 @@
-package com.gestionescale.service.implementation;
+package com.gestionescale.service.interfaces;
 
 import com.gestionescale.model.TypeMouvement;
 import java.util.List;
 
-public interface TypeMouvementService {
+public interface ITypeMouvementService {
     void ajouterTypeMouvement(TypeMouvement typeMouvement);
     void modifierTypeMouvement(TypeMouvement typeMouvement);
     void supprimerTypeMouvement(String codeTypeMvt);

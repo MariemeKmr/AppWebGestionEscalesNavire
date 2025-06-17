@@ -32,6 +32,9 @@
                 </tr>
             </c:forEach>
         </table>
+        <a href="${pageContext.request.contextPath}/jsp/dashboard.jsp" class="btn-back">
+            <i class="fas fa-arrow-left"></i> Retour à l'acceuil
+        </a>
     </div>
 </body>
 </html>

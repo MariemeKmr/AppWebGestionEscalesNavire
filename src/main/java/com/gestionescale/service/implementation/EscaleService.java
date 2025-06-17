@@ -5,6 +5,7 @@ import com.gestionescale.dao.implementation.EscaleDAO;
 import com.gestionescale.model.Escale;
 import com.gestionescale.service.interfaces.IEscaleService;
 
+import java.sql.SQLException;
 import java.util.List;
 
 public class EscaleService implements IEscaleService {
@@ -15,28 +16,43 @@ public class EscaleService implements IEscaleService {
         this.escaleDAO = new EscaleDAO();
     }
 
-    @Override
     public void ajouterEscale(Escale escale) {
-        escaleDAO.ajouterEscale(escale);
+        try {
+            escaleDAO.ajouterEscale(escale);
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de l’ajout de l’escale", e);
+        }
     }
 
-    @Override
     public Escale getEscaleParNumero(String numeroEscale) {
-        return escaleDAO.getEscaleParNumero(numeroEscale);
+        try {
+            return escaleDAO.getEscaleParNumero(numeroEscale);
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de la récupération de l’escale", e);
+        }
     }
 
-    @Override
     public List<Escale> getToutesLesEscales() {
-        return escaleDAO.getToutesLesEscales();
+        try {
+            return escaleDAO.getToutesLesEscales();
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de la récupération des escales", e);
+        }
     }
 
-    @Override
     public void modifierEscale(Escale escale) {
-        escaleDAO.modifierEscale(escale);
+        try {
+            escaleDAO.modifierEscale(escale);
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de la modification de l’escale", e);
+        }
     }
 
-    @Override
     public void supprimerEscale(String numeroEscale) {
-        escaleDAO.supprimerEscale(numeroEscale);
+        try {
+            escaleDAO.supprimerEscale(numeroEscale);
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de la suppression de l’escale", e);
+        }
     }
 }

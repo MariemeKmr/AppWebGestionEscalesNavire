@@ -1,10 +1,9 @@
 package com.gestionescale.servlet;
 
 import com.gestionescale.model.Utilisateur;
-import com.gestionescale.service.UtilisateurService;
+import com.gestionescale.service.implementation.UtilisateurService;
 import java.io.IOException;
 import java.util.List;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,47 +16,54 @@ public class UtilisateurServlet extends HttpServlet {
         String action = request.getParameter("action");
         if (action == null) action = "list";
 
-        switch (action) {
-            case "new":
-                showForm(request, response, false);
-                break;
-            case "edit":
-                showForm(request, response, true);
-                break;
-            case "view":
-                viewUtilisateur(request, response);
-                break;
-            case "delete":
-                deleteUtilisateur(request, response);
-                break;
-            default:
-                listUtilisateurs(request, response);
+        try {
+            switch (action) {
+                case "new":
+                    showForm(request, response, false);
+                    break;
+                case "edit":
+                    showForm(request, response, true);
+                    break;
+                case "view":
+                    viewUtilisateur(request, response);
+                    break;
+                case "delete":
+                    deleteUtilisateur(request, response);
+                    break;
+                default:
+                    listUtilisateurs(request, response);
+            }
+        } catch (Exception e) {
+            throw new ServletException("Erreur lors du traitement de la requête utilisateur", e);
         }
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
 
-        if ("new".equals(action)) {
-            Utilisateur utilisateur = new Utilisateur();
-            utilisateur.setNomComplet(request.getParameter("nomComplet"));
-            utilisateur.setEmail(request.getParameter("email"));
-            utilisateur.setTelephone(request.getParameter("telephone"));
-            utilisateur.setMotDePasse(request.getParameter("motDePasse"));
-            utilisateur.setRole(request.getParameter("role"));
-            service.addUtilisateur(utilisateur);
-        } else if ("edit".equals(action)) {
-            Utilisateur utilisateur = new Utilisateur();
-            utilisateur.setId(Integer.parseInt(request.getParameter("id")));
-            utilisateur.setNomComplet(request.getParameter("nomComplet"));
-            utilisateur.setEmail(request.getParameter("email"));
-            utilisateur.setTelephone(request.getParameter("telephone"));
-            utilisateur.setMotDePasse(request.getParameter("motDePasse"));
-            utilisateur.setRole(request.getParameter("role"));
-            service.updateUtilisateur(utilisateur);
+        try {
+            if ("new".equals(action)) {
+                Utilisateur utilisateur = new Utilisateur();
+                utilisateur.setNomComplet(request.getParameter("nomComplet"));
+                utilisateur.setEmail(request.getParameter("email"));
+                utilisateur.setTelephone(request.getParameter("telephone"));
+                utilisateur.setMotDePasse(request.getParameter("motDePasse"));
+                utilisateur.setRole(request.getParameter("role"));
+                service.addUtilisateur(utilisateur);
+            } else if ("edit".equals(action)) {
+                Utilisateur utilisateur = new Utilisateur();
+                utilisateur.setId(Integer.parseInt(request.getParameter("id")));
+                utilisateur.setNomComplet(request.getParameter("nomComplet"));
+                utilisateur.setEmail(request.getParameter("email"));
+                utilisateur.setTelephone(request.getParameter("telephone"));
+                utilisateur.setMotDePasse(request.getParameter("motDePasse"));
+                utilisateur.setRole(request.getParameter("role"));
+                service.updateUtilisateur(utilisateur);
+            }
+            response.sendRedirect(request.getContextPath() + "/utilisateur?action=list");
+        } catch (Exception e) {
+            throw new ServletException("Erreur lors de la sauvegarde de l'utilisateur", e);
         }
-
-        response.sendRedirect(request.getContextPath() + "/utilisateur?action=list");
     }
 
     private void listUtilisateurs(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -71,6 +77,9 @@ public class UtilisateurServlet extends HttpServlet {
             int id = Integer.parseInt(request.getParameter("id"));
             Utilisateur utilisateur = service.getUtilisateurById(id);
             request.setAttribute("utilisateur", utilisateur);
+        } else {
+            // Ajoute ceci pour la création
+            request.setAttribute("utilisateur", new Utilisateur());
         }
         request.setAttribute("action", isEdit ? "edit" : "new");
         request.getRequestDispatcher("/jsp/utilisateur/form.jsp").forward(request, response);

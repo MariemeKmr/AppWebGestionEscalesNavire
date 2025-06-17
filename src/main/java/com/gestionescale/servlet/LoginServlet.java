@@ -1,8 +1,7 @@
 package com.gestionescale.servlet;
 
-import com.gestionescale.dao.UtilisateurDAO;
+import com.gestionescale.dao.implementation.UtilisateurDAO;
 import com.gestionescale.model.Utilisateur;
-
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;

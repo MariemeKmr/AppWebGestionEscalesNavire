@@ -90,19 +90,16 @@ public class NavireDAO implements INavireDAO {
 
     @Override
     public void modifierNavire(Navire navire) throws SQLException {
-        String sql = "UPDATE navire SET nomNavire = ?, longueurNavire = ?, largeurNavire = ?, volumeNavire = ?, tirantEauNavire = ?, idConsignataire = ? WHERE numeroNavire = ?";
+        String sql = "UPDATE navire SET longueurNavire = ?, largeurNavire = ?, volumeNavire = ?, tirantEauNavire = ?, idConsignataire = ? WHERE numeroNavire = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
-
-            stmt.setString(1, navire.getNomNavire());
-            stmt.setDouble(2, navire.getLongueurNavire());
-            stmt.setDouble(3, navire.getLargeurNavire());
-            stmt.setDouble(4, navire.getVolumeNavire());
-            stmt.setDouble(5, navire.getTiranEauNavire());
-            stmt.setInt(6, navire.getConsignataire().getIdConsignataire());
-            stmt.setString(7, navire.getNumeroNavire());
-
+            stmt.setDouble(1, navire.getLongueurNavire());
+            stmt.setDouble(2, navire.getLargeurNavire());
+            stmt.setDouble(3, navire.getVolumeNavire());
+            stmt.setDouble(4, navire.getTiranEauNavire());
+            stmt.setInt(5, navire.getConsignataire().getIdConsignataire());
+            stmt.setString(6, navire.getNumeroNavire());
             stmt.executeUpdate();
         }
     }

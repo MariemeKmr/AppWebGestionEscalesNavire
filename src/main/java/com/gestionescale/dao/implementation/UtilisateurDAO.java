@@ -26,6 +26,7 @@ public class UtilisateurDAO implements IUtilisateurDAO {
                 utilisateur.setEmail(resultSet.getString("email"));
                 utilisateur.setMotDePasse(resultSet.getString("mot_de_passe"));
                 utilisateur.setRole(resultSet.getString("role"));
+                utilisateur.setTelephone(resultSet.getString("telephone")); // Ajouté
                 utilisateurs.add(utilisateur);
             }
 
@@ -54,6 +55,7 @@ public class UtilisateurDAO implements IUtilisateurDAO {
                 utilisateur.setEmail(resultSet.getString("email"));
                 utilisateur.setMotDePasse(resultSet.getString("mot_de_passe"));
                 utilisateur.setRole(resultSet.getString("role"));
+                utilisateur.setTelephone(resultSet.getString("telephone")); // Ajouté
             }
 
         } catch (SQLException e) {
@@ -65,7 +67,7 @@ public class UtilisateurDAO implements IUtilisateurDAO {
 
     @Override
     public void ajouterUtilisateur(Utilisateur utilisateur) {
-        String sql = "INSERT INTO utilisateur (nom_complet, email, mot_de_passe, role) VALUES (?, ?, ?, ?)";
+        String sql = "INSERT INTO utilisateur (nom_complet, email, mot_de_passe, role, telephone) VALUES (?, ?, ?, ?, ?)";
 
         try (Connection connexion = DatabaseConnection.getConnection();
              PreparedStatement statement = connexion.prepareStatement(sql)) {
@@ -74,6 +76,7 @@ public class UtilisateurDAO implements IUtilisateurDAO {
             statement.setString(2, utilisateur.getEmail());
             statement.setString(3, utilisateur.getMotDePasse());
             statement.setString(4, utilisateur.getRole());
+            statement.setString(5, utilisateur.getTelephone()); // Ajouté
             statement.executeUpdate();
 
         } catch (SQLException e) {
@@ -83,7 +86,7 @@ public class UtilisateurDAO implements IUtilisateurDAO {
 
     @Override
     public void modifierUtilisateur(Utilisateur utilisateur) {
-        String sql = "UPDATE utilisateur SET nom_complet = ?, email = ?, mot_de_passe = ?, role = ? WHERE id = ?";
+        String sql = "UPDATE utilisateur SET nom_complet = ?, email = ?, mot_de_passe = ?, role = ?, telephone = ? WHERE id = ?";
 
         try (Connection connexion = DatabaseConnection.getConnection();
              PreparedStatement statement = connexion.prepareStatement(sql)) {
@@ -92,7 +95,8 @@ public class UtilisateurDAO implements IUtilisateurDAO {
             statement.setString(2, utilisateur.getEmail());
             statement.setString(3, utilisateur.getMotDePasse());
             statement.setString(4, utilisateur.getRole());
-            statement.setInt(5, utilisateur.getId());
+            statement.setString(5, utilisateur.getTelephone()); // Ajouté
+            statement.setInt(6, utilisateur.getId());
             statement.executeUpdate();
 
         } catch (SQLException e) {
@@ -134,6 +138,7 @@ public class UtilisateurDAO implements IUtilisateurDAO {
                 utilisateur.setEmail(resultSet.getString("email"));
                 utilisateur.setMotDePasse(resultSet.getString("mot_de_passe"));
                 utilisateur.setRole(resultSet.getString("role"));
+                utilisateur.setTelephone(resultSet.getString("telephone")); // Ajouté
             }
 
         } catch (SQLException e) {

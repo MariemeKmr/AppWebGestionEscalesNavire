@@ -1,3 +1,4 @@
+/* USER */
 /* General Styles */
 body {
     font-family: 'Arial', sans-serif;
@@ -7,7 +8,7 @@ body {
 }
 
 /* Container Styles */
-.content-container, .container {
+.content-container {
     margin-top: 80px;
     max-width: 1200px;
     margin: 80px auto 20px;
@@ -117,4 +118,59 @@ li {
     background-color: #f9f9f9;
     border-radius: 4px;
     font-size: 18px;
+}
+/* Empêche la "carte blanche" dans la navbar et le dropdown du user connecté */
+.navbar .container {
+    background: transparent !important;
+    box-shadow: none !important;
+}
+
+/* Pour le menu déroulant utilisateur (profil/déconnexion) */
+.navbar .dropdown-menu {
+    background: #222c3c !important; /* ou transparent, ou la couleur de ta navbar */
+    color: white !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.13); /* optionnel */
+    border: none !important;
+    min-width: 180px;
+}
+.navbar .dropdown-menu .dropdown-item {
+    background: none !important;
+    color: #fff !important;
+}
+.navbar .dropdown-menu .dropdown-item:hover {
+    background: #2980b9 !important;
+    color: #fff !important;
+}
+.navbar .dropdown-divider {
+    border-top: 1px solid #3498db !important;
+}
+
+.navbar .nav-link,
+.navbar .nav-item,
+.navbar .dropdown,
+.navbar .dropdown-menu,
+.navbar .dropdown-menu .dropdown-item {
+    background: transparent !important;
+    background-color: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+}
+.navbar .dropdown-menu {
+    background: #222c3c !important;
+    color: white !important;
+    border-radius: 8px !important;
+    min-width: 180px;
+}
+.navbar .dropdown-menu .dropdown-item {
+    color: #fff !important;
+}
+.navbar .dropdown-menu .dropdown-item:hover {
+    background: #2980b9 !important;
+    color: #fff !important;
+}
+.navbar .badge {
+    background: #e74c3c !important;
+    color: #fff !important;
+    border: none !important;
 }

@@ -107,4 +107,25 @@ public class FactureDAO implements IFactureDAO {
             ps.executeUpdate();
         }
     }
+    public Facture trouverParBonPilotageId(int bonPilotageId) throws Exception {
+        String sql = "SELECT f.* FROM facture f " +
+                     "JOIN facture_bon_pilotage fb ON f.id = fb.id_facture " +
+                     "WHERE fb.id_mouvement = ?";
+        Facture facture = null;
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setInt(1, bonPilotageId);
+            try (ResultSet rs = ps.executeQuery()) {
+                if (rs.next()) {
+                    facture = new Facture();
+                    facture.setId(rs.getInt("id"));
+                    facture.setNumeroFacture(rs.getString("numero_facture"));
+                    facture.setDateGeneration(rs.getDate("date_generation"));
+                    facture.setMontantTotal(rs.getDouble("montant_total"));
+                    facture.setIdAgent(rs.getInt("id_agent"));
+                }
+            }
+        }
+        return facture;
+    }
 }

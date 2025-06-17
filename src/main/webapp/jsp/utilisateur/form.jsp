@@ -29,11 +29,12 @@
             <label for="motDePasse">Mot de passe :</label>
             <input type="password" id="motDePasse" name="motDePasse" value="${utilisateur.motDePasse}" required/>
 
-            <label for="role">Rôle :</label>
-            <select id="role" name="role" required>
-                <option value="admin" ${utilisateur.role == 'admin' ? 'selected' : ''}>Admin</option>
-                <option value="agent" ${utilisateur.role == 'agent' ? 'selected' : ''}>Agent</option>
-            </select>
+			<label for="role">Rôle :</label>
+			<select id="role" name="role" required>
+			    <option value="admin" ${utilisateur.role == 'admin' ? 'selected' : ''}>Admin</option>
+			    <option value="agent_portuaire" ${utilisateur.role == 'agent_portuaire' ? 'selected' : ''}>Agent portuaire</option>
+			    <option value="agent_facturation" ${utilisateur.role == 'agent_facturation' ? 'selected' : ''}>Agent facturation</option>
+			</select>
 
             <button type="submit">Enregistrer</button>
         </form>
