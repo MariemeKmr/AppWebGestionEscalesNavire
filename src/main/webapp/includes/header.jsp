@@ -40,11 +40,13 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li>
-                                <a class="dropdown-item" href="<c:url value='/logout'/>">
-                                    <i class="fas fa-sign-out-alt nav-icon"></i> Déconnexion
-                                </a>
-                            </li>
+							<li>
+							<form action="${pageContext.request.contextPath}/LogoutServlet" method="post" style="display:inline;">
+							    <button type="submit" class="dropdown-item" style="background:none; border:none; padding:0; width:100%; text-align:left;">
+							        <i class="fas fa-sign-out-alt nav-icon"></i> Déconnexion
+							    </button>
+							</form>
+							</li>
                         </ul>
                     </li>
                 </ul>

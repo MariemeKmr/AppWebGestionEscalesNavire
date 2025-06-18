@@ -31,56 +31,104 @@
     <p class="welcome-message">Vous êtes connecté en tant que <strong><%= role %></strong>.</p>
 
     <div class="dashboard-grid">
+        <%-- Cartes pour ADMINISTRATEUR --%>
         <% if ("admin".equals(role)) { %>
             <div class="dashboard-card">
                 <i class="fas fa-users"></i>
-				<a href="${pageContext.request.contextPath}/utilisateur?action=list"><p>Gérer les utilisateurs</p></a>
+                <a href="${pageContext.request.contextPath}/utilisateur?action=list"><p>Gérer les utilisateurs</p></a>
+            </div>
+            <div class="dashboard-card">
+                <i class="fas fa-user-tie"></i>
+                <a href="${pageContext.request.contextPath}/armateur?action=list"><p>Gérer les armateurs</p></a>
             </div>
             <div class="dashboard-card">
                 <i class="fas fa-handshake"></i>
                 <a href="${pageContext.request.contextPath}/consignataire/list/"><p>Gérer les consignataires</p></a>
             </div>
             <div class="dashboard-card">
+                <i class="fas fa-ship"></i>
+                <a href="${pageContext.request.contextPath}/navire/list/"><p>Gérer les navires</p></a>
+            </div>
+            <div class="dashboard-card">
                 <i class="fas fa-calendar-alt"></i>
                 <a href="${pageContext.request.contextPath}/escale/list/"><p>Gérer les escales</p></a>
             </div>
             <div class="dashboard-card">
-                <i class="fas fa-ship"></i>
-                <a href="${pageContext.request.contextPath}/navire/list/"><p>Gérer les navires</p></a>
+                <i class="fas fa-file-invoice"></i>
+                <a href="#"><p>Bons de pilotage</p></a>
+            </div>
+            <div class="dashboard-card">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <a href="${pageContext.request.contextPath}/factures"><p>Facturation</p></a>
             </div>
             <div class="dashboard-card">
                 <i class="fas fa-chart-line"></i>
                 <a href="#"><p>Consulter les rapports</p></a>
             </div>
             <div class="dashboard-card">
+                <i class="fas fa-history"></i>
+                <a href="${pageContext.request.contextPath}/logs"><p>Historique du système</p></a>
+            </div>
+        <% } %>
+        
+        <%-- Cartes pour AGENT PORTUAIRE --%>
+        <% if ("agent_portuaire".equals(role)) { %>
+            <div class="dashboard-card">
+                <i class="fas fa-calendar-plus"></i>
+                <a href="${pageContext.request.contextPath}/escale/new"><p>Créer une escale</p></a>
+            </div>
+            <div class="dashboard-card">
+                <i class="fas fa-eye"></i>
+                <a href="${pageContext.request.contextPath}/escale/list/"><p>Voir les escales</p></a>
+            </div>
+            <div class="dashboard-card">
+                <i class="fas fa-ship"></i>
+                <a href="${pageContext.request.contextPath}/navire/new"><p>Créer un navire</p></a>
+            </div>
+            <div class="dashboard-card">
+                <i class="fas fa-ship"></i>
+                <a href="${pageContext.request.contextPath}/navire/list/"><p>Voir les navires</p></a>
+            </div>
+            <div class="dashboard-card">
+                <i class="fas fa-user-tie"></i>
+                <a href="${pageContext.request.contextPath}/armateur/list/"><p>Voir les armateurs</p></a>
+            </div>
+            <div class="dashboard-card">
+                <i class="fas fa-user-tie"></i>
+                <a href="${pageContext.request.contextPath}/sonsignataire/list/"><p>Voir les consignataires</p></a>
+            </div>
+            <div class="dashboard-card">
                 <i class="fas fa-file-invoice"></i>
                 <a href="#"><p>Bons de pilotage</p></a>
             </div>
-        <% } else if ("agent".equals(role)) { %>
-			<div class="dashboard-card">
-			    <i class="fas fa-calendar-plus"></i>
-			    <a href="${pageContext.request.contextPath}/escale/new"><p>Créer une escale</p></a>
-			</div>
-			<div class="dashboard-card">
-			    <i class="fas fa-eye"></i>
-			    <a href="${pageContext.request.contextPath}/escale/list/"><p>Voir les escales</p></a>
-			</div>
-			<div class="dashboard-card">
-			    <i class="fas fa-ship"></i>
-			    <a href="${pageContext.request.contextPath}/navire/new"><p>Créer un navire</p></a>
-			</div>
-			<div class="dashboard-card">
-			    <i class="fas fa-ship"></i>
-			    <a href="${pageContext.request.contextPath}/navire/list/"><p>Voir les navires</p></a>
-			</div>
-			<div class="dashboard-card">
-			    <i class="fas fa-file-alt"></i>
-			    <a href="${pageContext.request.contextPath}/bonpilotage/new"><p>Créer un bon de pilotage</p></a>
-			</div>
-			<div class="dashboard-card">
-			    <i class="fas fa-file-alt"></i>
-			    <a href="${pageContext.request.contextPath}/bonpilotage/"><p>Voir les bons de pilotage</p></a>
-			</div>
+        <% } %>
+        
+        <%-- Cartes pour AGENT FACTURATION --%>
+        <% if ("agent_facturation".equals(role)) { %>
+            <div class="dashboard-card">
+                <i class="fas fa-file-invoice-dollar"></i>
+                <a href="${pageContext.request.contextPath}/factures"><p>Gérer la facturation</p></a>
+            </div>
+            <div class="dashboard-card">
+                <i class="fas fa-clock"></i>
+                <a href="${pageContext.request.contextPath}/facturation/historique"><p>Historique de facturation</p></a>
+            </div>
+            <div class="dashboard-card">
+                <i class="fas fa-ship"></i>
+                <a href="${pageContext.request.contextPath}/navire?action=list"><p>Voir les navires</p></a>
+            </div>
+            <div class="dashboard-card">
+                <i class="fas fa-user-tie"></i>
+                <a href="${pageContext.request.contextPath}/armateur?action=list"><p>Voir les armateurs</p></a>
+            </div>
+            <div class="dashboard-card">
+                <i class="fas fa-user-tie"></i>
+                <a href="${pageContext.request.contextPath}/consignataire?action=list"><p>Voir les consignataires</p></a>
+            </div>
+            <div class="dashboard-card">
+                <i class="fas fa-file-invoice"></i>
+                <a href="#"><p>Voir les bons de pilotage</p></a>
+            </div>
         <% } %>
     </div>
 </div>

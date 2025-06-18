@@ -23,7 +23,20 @@
             <p><strong>Largeur :</strong> ${navire.largeurNavire} mètres</p>
             <p><strong>Volume :</strong> ${navire.volumeNavire} tonnes</p>
             <p><strong>Tirant d'eau :</strong> ${navire.tiranEauNavire} mètres</p>
-            <p><strong>Consignataire :</strong> ${navire.consignataire.raisonSociale}</p>
+            <p><strong>Consignataire :</strong> ${navire.consignataire.raisonSociale}</p>            
+            <tr>
+			  <th>Armateur</th>
+			  <td>
+			    <c:choose>
+			      <c:when test="${not empty navire.armateur}">
+			        ${navire.armateur.nomArmateur}
+			      </c:when>
+			      <c:otherwise>
+			        <span class="text-danger bg-light-rouge"><em>Non défini !</em></span>
+			      </c:otherwise>
+			    </c:choose>
+			  </td>
+			</tr>
         </div>
         <a href="${pageContext.request.contextPath}/navire?action=list" class="btn-back">
             <i class="fas fa-arrow-left"></i> Retour à la liste

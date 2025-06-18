@@ -10,10 +10,11 @@ public class Navire {
 	private double volumeNavire;
 	private double tiranEauNavire;
 	private Consignataire consignataire;
+	private Armateur armateur;
 	
     // Constructeurs
 	public Navire(){}
-	public Navire(String numeroNavire, String nomNavire, double longueurNavire, double largeurNavire,double volumeNavire, double tiranEauNavire, Consignataire consignataire )
+	public Navire(String numeroNavire, String nomNavire, double longueurNavire, double largeurNavire,double volumeNavire, double tiranEauNavire, Consignataire consignataire, Armateur armateur )
 		{
 		this.nomNavire=nomNavire;
 		this.numeroNavire=numeroNavire;
@@ -22,6 +23,7 @@ public class Navire {
 		this.volumeNavire=volumeNavire;
 		this.tiranEauNavire=tiranEauNavire;
 		this.consignataire=consignataire;
+		this.armateur=armateur;
 		}
 
     // Getters et Setters
@@ -72,6 +74,13 @@ public class Navire {
 	}
 	public void setConsignataire(Consignataire consignataire) {
 		this.consignataire = consignataire;
+	}
+	
+	public Armateur getArmateur() {
+	    return armateur;
+	}
+	public void setArmateur(Armateur armateur) {
+	    this.armateur = armateur;
 	}
 
 }

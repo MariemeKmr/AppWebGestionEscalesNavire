@@ -21,6 +21,14 @@
     <servlet-name>ConsignataireServlet</servlet-name>
     <url-pattern>/consignataire/*</url-pattern>
   </servlet-mapping>
+<servlet>
+  <servlet-name>ArmateurServlet</servlet-name>
+  <servlet-class>com.gestionescale.servlet.ArmateurServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+  <servlet-name>ArmateurServlet</servlet-name>
+  <url-pattern>/armateur/*</url-pattern>
+</servlet-mapping>
   <servlet>
     <servlet-name>NavireServlet</servlet-name>
     <servlet-class>com.gestionescale.servlet.NavireServlet</servlet-class>
