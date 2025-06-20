@@ -53,13 +53,13 @@
                 <i class="fas fa-calendar-alt"></i>
                 <a href="${pageContext.request.contextPath}/escale/list/"><p>Gérer les escales</p></a>
             </div>
-            <div class="dashboard-card">
-                <i class="fas fa-file-invoice"></i>
-                <a href="#"><p>Bons de pilotage</p></a>
-            </div>
+			<div class="dashboard-card">
+			    <i class="fas fa-file-invoice"></i>
+			    <a href="${pageContext.request.contextPath}/bonpilotage/list"><p>Bons de pilotage</p></a>
+			</div>
             <div class="dashboard-card">
                 <i class="fas fa-file-invoice-dollar"></i>
-                <a href="${pageContext.request.contextPath}/factures"><p>Facturation</p></a>
+                <a href="#"><p>Facturation</p></a>
             </div>
             <div class="dashboard-card">
                 <i class="fas fa-chart-line"></i>
@@ -67,7 +67,7 @@
             </div>
             <div class="dashboard-card">
                 <i class="fas fa-history"></i>
-                <a href="${pageContext.request.contextPath}/logs"><p>Historique du système</p></a>
+                <a href="#"><p>Historique du système</p></a>
             </div>
         <% } %>
         

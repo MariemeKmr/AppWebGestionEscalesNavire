@@ -9,6 +9,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
 
 public class EscaleServlet extends HttpServlet {
@@ -69,31 +71,86 @@ public class EscaleServlet extends HttpServlet {
 
     private void showNewForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        try {
+            List<Navire> tousNavires = navireDAO.getTousLesNavires();
+            List<Navire> naviresAvecConsignataire = new ArrayList<>();
+            for (Navire n : tousNavires) {
+                if (n.getConsignataire() != null) {
+                    naviresAvecConsignataire.add(n);
+                }
+            }
+            request.setAttribute("navires", naviresAvecConsignataire);
+            request.setAttribute("escale", new Escale());
+        } catch (Exception e) {
+            request.setAttribute("navires", new ArrayList<Navire>());
+            request.setAttribute("escale", new Escale());
+        }
         request.getRequestDispatcher("/jsp/escale/form.jsp").forward(request, response);
     }
 
-    private void insertEscale(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+    private void showEditForm(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        String numeroEscale = request.getParameter("numeroEscale");
         try {
-            String numeroEscale = request.getParameter("numeroEscale");
-            String numeroNavire = request.getParameter("numeroNavire"); // Doit être un String !
+            Escale escale = escaleDAO.getEscaleParNumero(numeroEscale);
+            request.setAttribute("escale", escale);
+
+            List<Navire> tousNavires = navireDAO.getTousLesNavires();
+            List<Navire> naviresAvecConsignataire = new ArrayList<>();
+            for (Navire n : tousNavires) {
+                if (n.getConsignataire() != null) {
+                    naviresAvecConsignataire.add(n);
+                }
+            }
+            request.setAttribute("navires", naviresAvecConsignataire);
+            request.setAttribute("escale", escale);
+            request.getRequestDispatcher("/jsp/escale/form.jsp").forward(request, response);
+        } catch (SQLException e) {
+            throw new ServletException("Erreur lors de la récupération de l'escale", e);
+        }
+    }
+
+    private void insertEscale(HttpServletRequest request, HttpServletResponse response)
+            throws IOException, ServletException {
+        try {
+            String numeroNavire = request.getParameter("numeroNavire");
             String debutEscale = request.getParameter("debutEscale");
             String finEscale = request.getParameter("finEscale");
-            double prixSejour = Double.parseDouble(request.getParameter("prixSejour"));
+            String prixUnitaireStr = request.getParameter("prixUnitaire");
             String zone = request.getParameter("zone");
-            // Consignataire à gérer selon ton formulaire
+            java.sql.Date debutDate = java.sql.Date.valueOf(debutEscale);
+            java.sql.Date finDate = java.sql.Date.valueOf(finEscale);
+
+            String numeroEscale = genererNumeroEscale(debutDate, escaleDAO);
 
             Navire navire = navireDAO.getNavireParNumero(numeroNavire);
-            // Ici, il faudrait aussi récupérer le Consignataire si besoin
 
+            if (navire == null || navire.getConsignataire() == null) {
+                request.setAttribute("error", "Impossible de créer une escale pour un navire sans consignataire.");
+                showNewForm(request, response);
+                return;
+            }
+
+            double prixUnitaire = Double.parseDouble(prixUnitaireStr);
+            long nbJours = ChronoUnit.DAYS.between(debutDate.toLocalDate(), finDate.toLocalDate()) + 1;
+            double prixSejour = prixUnitaire * nbJours;
+//
+//            System.out.println("numeroNavire: " + request.getParameter("numeroNavire"));
+//            System.out.println("debutEscale: " + request.getParameter("debutEscale"));
+//            System.out.println("finEscale: " + request.getParameter("finEscale"));
+//            System.out.println("prixUnitaire: " + request.getParameter("prixUnitaire"));
+//            System.out.println("zone: " + request.getParameter("zone"));
+//            System.out.println("prixSejour: " + request.getParameter("prixSejour"));
+            
             Escale escale = new Escale();
             escale.setNumeroEscale(numeroEscale);
             escale.setMyNavire(navire);
-            escale.setDebutEscale(java.sql.Date.valueOf(debutEscale));
-            escale.setFinEscale(java.sql.Date.valueOf(finEscale));
+            escale.setDebutEscale(debutDate);
+            escale.setFinEscale(finDate);
+            escale.setPrixUnitaire(prixUnitaire);
             escale.setPrixSejour(prixSejour);
             escale.setZone(zone);
-            // escale.setConsignataire(consignataire);
+            escale.setConsignataire(navire.getConsignataire());
 
             escaleDAO.ajouterEscale(escale);
             response.sendRedirect(request.getContextPath() + "/escale/");
@@ -103,39 +160,39 @@ public class EscaleServlet extends HttpServlet {
         }
     }
 
-    private void showEditForm(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
-        String numeroEscale = request.getParameter("numeroEscale");
-        try {
-            Escale escale = escaleDAO.getEscaleParNumero(numeroEscale);
-            request.setAttribute("escale", escale);
-            request.getRequestDispatcher("/jsp/escale/form.jsp").forward(request, response);
-        } catch (SQLException e) {
-            throw new ServletException("Erreur lors de la récupération de l'escale", e);
-        }
-    }
-
     private void updateEscale(HttpServletRequest request, HttpServletResponse response)
-            throws IOException {
+            throws IOException, ServletException {
         try {
             String numeroEscale = request.getParameter("numeroEscale");
             String numeroNavire = request.getParameter("numeroNavire");
             String debutEscale = request.getParameter("debutEscale");
             String finEscale = request.getParameter("finEscale");
-            double prixSejour = Double.parseDouble(request.getParameter("prixSejour"));
+            String prixUnitaireStr = request.getParameter("prixUnitaire");
             String zone = request.getParameter("zone");
-            // Consignataire à gérer
+            java.sql.Date debutDate = java.sql.Date.valueOf(debutEscale);
+            java.sql.Date finDate = java.sql.Date.valueOf(finEscale);
 
             Navire navire = navireDAO.getNavireParNumero(numeroNavire);
+
+            if (navire == null || navire.getConsignataire() == null) {
+                request.setAttribute("error", "Impossible de modifier une escale pour un navire sans consignataire.");
+                showEditForm(request, response);
+                return;
+            }
+
+            double prixUnitaire = Double.parseDouble(prixUnitaireStr);
+            long nbJours = ChronoUnit.DAYS.between(debutDate.toLocalDate(), finDate.toLocalDate()) + 1;
+            double prixSejour = prixUnitaire * nbJours;
 
             Escale escale = new Escale();
             escale.setNumeroEscale(numeroEscale);
             escale.setMyNavire(navire);
-            escale.setDebutEscale(java.sql.Date.valueOf(debutEscale));
-            escale.setFinEscale(java.sql.Date.valueOf(finEscale));
+            escale.setDebutEscale(debutDate);
+            escale.setFinEscale(finDate);
+            escale.setPrixUnitaire(prixUnitaire);
             escale.setPrixSejour(prixSejour);
             escale.setZone(zone);
-            // escale.setConsignataire(consignataire);
+            escale.setConsignataire(navire.getConsignataire());
 
             escaleDAO.modifierEscale(escale);
             response.sendRedirect(request.getContextPath() + "/escale/");
@@ -148,12 +205,20 @@ public class EscaleServlet extends HttpServlet {
     private void deleteEscale(HttpServletRequest request, HttpServletResponse response)
             throws IOException {
         String numeroEscale = request.getParameter("numeroEscale");
+        response.setContentType("text/plain; charset=UTF-8");
+        if (numeroEscale == null || numeroEscale.isEmpty()) {
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("Paramètre numeroEscale manquant.");
+            return;
+        }
         try {
             escaleDAO.supprimerEscale(numeroEscale);
-            response.sendRedirect(request.getContextPath() + "/escale/");
+            response.setStatus(HttpServletResponse.SC_OK);
+            response.getWriter().write("Suppression réussie");
         } catch (SQLException e) {
             e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Erreur lors de la suppression.");
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            response.getWriter().write("Erreur lors de la suppression : " + e.getMessage());
         }
     }
 
@@ -163,9 +228,26 @@ public class EscaleServlet extends HttpServlet {
         try {
             Escale escale = escaleDAO.getEscaleParNumero(numeroEscale);
             request.setAttribute("escale", escale);
-            request.getRequestDispatcher("/jsp/escale/detail.jsp").forward(request, response);
+            request.getRequestDispatcher("/jsp/escale/view.jsp").forward(request, response);
         } catch (SQLException e) {
             throw new ServletException("Erreur lors de la récupération de l'escale", e);
         }
+    }
+
+    private String genererNumeroEscale(java.sql.Date date, EscaleDAO escaleDAO) throws SQLException {
+        java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyMM");
+        String moisPart = sdf.format(date);
+        java.text.SimpleDateFormat dayFormat = new java.text.SimpleDateFormat("dd");
+        String jourPart = dayFormat.format(date);
+        String prefix = "ESC" + moisPart + jourPart;
+        int count = escaleDAO.compterEscalesParMois(date);
+        String numeroIncremental = String.format("%02d", count + 1);
+        return prefix + numeroIncremental;
+    }
+
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response)
+            throws ServletException, IOException {
+        doGet(request, response);
     }
 }

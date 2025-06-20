@@ -12,7 +12,7 @@ public class TypeMouvementDAO implements ITypeMouvementDAO {
 
     @Override
     public void ajouterTypeMouvement(TypeMouvement typeMvt) throws SQLException {
-        String sql = "INSERT INTO TypeMouvement (codeTypeMvt, libelleTypeMvt, prixTypeMvt) VALUES (?, ?, ?)";
+        String sql = "INSERT INTO typemouvement (codeTypeMvt, libelleTypeMvt, prixTypeMvt) VALUES (?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -27,7 +27,7 @@ public class TypeMouvementDAO implements ITypeMouvementDAO {
 
     @Override
     public TypeMouvement getTypeMouvementParCode(String code) throws SQLException {
-        String sql = "SELECT * FROM TypeMouvement WHERE codeTypeMvt = ?";
+        String sql = "SELECT * FROM typemouvement WHERE codeTypeMvt = ?";
         TypeMouvement typeMvt = null;
 
         try (Connection conn = DatabaseConnection.getConnection();
@@ -50,7 +50,7 @@ public class TypeMouvementDAO implements ITypeMouvementDAO {
     @Override
     public List<TypeMouvement> getTousLesTypesMouvement() throws SQLException {
         List<TypeMouvement> liste = new ArrayList<>();
-        String sql = "SELECT * FROM TypeMouvement";
+        String sql = "SELECT * FROM typemouvement";
 
         try (Connection conn = DatabaseConnection.getConnection();
              Statement stmt = conn.createStatement();
@@ -70,7 +70,7 @@ public class TypeMouvementDAO implements ITypeMouvementDAO {
 
     @Override
     public void modifierTypeMouvement(TypeMouvement typeMvt) throws SQLException {
-        String sql = "UPDATE TypeMouvement SET libelleTypeMvt = ?, prixTypeMvt = ? WHERE codeTypeMvt = ?";
+        String sql = "UPDATE typemouvement SET libelleTypeMvt = ?, prixTypeMvt = ? WHERE codeTypeMvt = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -85,7 +85,7 @@ public class TypeMouvementDAO implements ITypeMouvementDAO {
 
     @Override
     public void supprimerTypeMouvement(String code) throws SQLException {
-        String sql = "DELETE FROM TypeMouvement WHERE codeTypeMvt = ?";
+        String sql = "DELETE FROM typemouvement WHERE codeTypeMvt = ?";
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
