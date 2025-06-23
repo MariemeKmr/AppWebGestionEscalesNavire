@@ -1,176 +1,98 @@
-/* USER */
-/* General Styles */
 body {
     font-family: 'Arial', sans-serif;
     background-color: #f8f9fa;
     margin: 0;
     padding: 0;
+    color: #333;
 }
 
-/* Container Styles */
 .content-container {
-    margin-top: 80px;
-    max-width: 1200px;
-    margin: 80px auto 20px;
-    padding: 20px;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    max-width: 700px;
+    margin: 2em auto;
+    background: #fff;
+    border-radius: 1.5em;
+    box-shadow: 0 0 10px 2px rgba(50,50,80,0.09);
+    padding: 2em 2.5em;
 }
 
-/* Heading Styles */
-h2 {
-    color: #2c3e50;
-    text-align: center;
-    margin-bottom: 20px;
+.section-card {
+    border: 1.5px solid #bfc9d1;
+    border-radius: 1em;
+    background: #fafdff;
+    margin-bottom: 2em;
+    box-shadow: 0 4px 16px 0 rgba(60, 90, 120, 0.07);
+    padding: 1.2em 1.5em 1.5em 1.5em;
 }
 
-/* Form Styles */
-form {
-    display: flex;
-    flex-direction: column;
+.section-card-title {
+    font-weight: bold;
+    font-size: 1.4em;           
+    margin-bottom: 1.2em;
+    color: #12345b;             
+    text-align: center;         
+    letter-spacing: 0.01em;
 }
 
 label {
     margin-top: 10px;
     font-weight: bold;
+    margin-bottom: 4px;
+    font-size: 1rem;
 }
 
 input[type="text"],
 input[type="email"],
 input[type="password"],
+input[type="number"],
 select {
     width: 100%;
     padding: 10px;
-    margin-top: 5px;
+    margin-top: 4px;
     margin-bottom: 15px;
     border: 1px solid #ddd;
-    border-radius: 4px;
+    border-radius: 5px;
     box-sizing: border-box;
+    font-size: 15px;
+    background: #fff;
+    transition: border-color 0.2s;
 }
 
-/* Button Styles */
-button[type="submit"],
-.btn-new,
-.btn-back {
+input[type="text"]:focus,
+input[type="email"]:focus,
+input[type="password"]:focus,
+select:focus {
+    border-color: #3498db;
+    outline: none;
+}
+
+button[type="submit"], .btn-back {
     display: inline-block;
-    padding: 10px 15px;
+    padding: 10px 18px;
     background-color: #3498db;
     color: white;
     text-decoration: none;
     border-radius: 5px;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, box-shadow 0.3s;
     font-size: 16px;
     border: none;
     cursor: pointer;
+    margin-top: 10px;
+    box-shadow: 0 1px 3px rgba(52,152,219,0.08);
+    width: auto;
 }
 
-button[type="submit"]:hover,
-.btn-new:hover,
-.btn-back:hover {
+button[type="submit"]:hover, .btn-back:hover {
     background-color: #2980b9;
 }
 
-/* Table Styles */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
-    background: white;
+h2 {
+    color: #2c3e50;
+    text-align: center;
+    margin-bottom: 28px;
+    font-size: 2rem;
+    font-weight: 700;
 }
 
-th, td {
-    padding: 12px;
-    text-align: left;
-    border-bottom: 1px solid #ddd;
-}
-
-th {
-    background-color: #f2f2f2;
-    font-weight: bold;
-}
-
-tr:hover {
-    background-color: #f5f5f5;
-}
-
-/* Link Styles */
-.actions a {
-    margin-right: 10px;
-    color: #3498db;
-    text-decoration: none;
-}
-
-.actions a:hover {
-    color: #2980b9;
-}
-
-/* List Styles */
-ul {
-    list-style-type: none;
-    padding: 0;
-}
-
-li {
-    padding: 15px;
-    margin-bottom: 15px;
-    background-color: #f9f9f9;
-    border-radius: 4px;
-    font-size: 18px;
-}
-/* Empêche la "carte blanche" dans la navbar et le dropdown du user connecté */
-.navbar .container {
-    background: transparent !important;
-    box-shadow: none !important;
-}
-
-/* Pour le menu déroulant utilisateur (profil/déconnexion) */
-.navbar .dropdown-menu {
-    background: #222c3c !important; /* ou transparent, ou la couleur de ta navbar */
-    color: white !important;
-    border-radius: 8px !important;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.13); /* optionnel */
-    border: none !important;
-    min-width: 180px;
-}
-.navbar .dropdown-menu .dropdown-item {
-    background: none !important;
-    color: #fff !important;
-}
-.navbar .dropdown-menu .dropdown-item:hover {
-    background: #2980b9 !important;
-    color: #fff !important;
-}
-.navbar .dropdown-divider {
-    border-top: 1px solid #3498db !important;
-}
-
-.navbar .nav-link,
-.navbar .nav-item,
-.navbar .dropdown,
-.navbar .dropdown-menu,
-.navbar .dropdown-menu .dropdown-item {
-    background: transparent !important;
-    background-color: transparent !important;
-    box-shadow: none !important;
-    border: none !important;
-}
-.navbar .dropdown-menu {
-    background: #222c3c !important;
-    color: white !important;
-    border-radius: 8px !important;
-    min-width: 180px;
-}
-.navbar .dropdown-menu .dropdown-item {
-    color: #fff !important;
-}
-.navbar .dropdown-menu .dropdown-item:hover {
-    background: #2980b9 !important;
-    color: #fff !important;
-}
-.navbar .badge {
-    background: #e74c3c !important;
-    color: #fff !important;
-    border: none !important;
+@media (max-width: 800px) {
+    .content-container { padding: 1em; }
 }

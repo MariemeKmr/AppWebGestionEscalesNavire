@@ -1,131 +1,78 @@
 package com.gestionescale.dao.implementation;
 
-import com.gestionescale.dao.interfaces.IFactureDAO;
 import com.gestionescale.model.Facture;
 import com.gestionescale.util.DatabaseConnection;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
-public class FactureDAO implements IFactureDAO {
+public class FactureDAO {
 
+    // Correction des noms de colonnes selon la BDD (snake_case)
     public void ajouterFacture(Facture facture) throws Exception {
-        String sql = "INSERT INTO facture (numero_facture, date_generation, montant_total, id_agent) VALUES (?, ?, ?, ?)";
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-
-            ps.setString(1, facture.getNumeroFacture());
-            ps.setDate(2, new java.sql.Date(facture.getDateGeneration().getTime()));
-            ps.setDouble(3, facture.getMontantTotal());
-            ps.setInt(4, facture.getIdAgent());
-
-            int affectedRows = ps.executeUpdate();
-
-            if (affectedRows == 0) {
-                throw new SQLException("La création de la facture a échoué, aucune ligne affectée.");
-            }
-
-            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    facture.setId(generatedKeys.getInt(1));
-                } else {
-                    throw new SQLException("La création de la facture a échoué, aucun ID retourné.");
-                }
-            }
-        }
-    }
-
-    public Facture trouverParId(int id) throws Exception {
-        String sql = "SELECT * FROM facture WHERE id = ?";
-        Facture facture = null;
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
+    	String sql = "INSERT INTO facture (numero_facture, date_generation, montant_total, id_agent, numero_escale) VALUES (?, ?, ?, ?, ?)";        try (Connection conn = DatabaseConnection.getConnection();
+            PreparedStatement stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+            stmt.setString(1, facture.getNumeroFacture());
+            stmt.setTimestamp(2, new java.sql.Timestamp(facture.getDateGeneration().getTime()));
+            stmt.setDouble(3, facture.getMontantTotal());
+            stmt.setInt(4, facture.getIdAgent());
+            stmt.setString(5, facture.getNumeroEscale());
+            int rows = stmt.executeUpdate();
+            if (rows == 0) throw new SQLException("Création facture échouée.");
+            try (ResultSet rs = stmt.getGeneratedKeys()) {
                 if (rs.next()) {
-                    facture = new Facture();
-                    facture.setId(rs.getInt("id"));
-                    facture.setNumeroFacture(rs.getString("numero_facture"));
-                    facture.setDateGeneration(rs.getDate("date_generation"));
-                    facture.setMontantTotal(rs.getDouble("montant_total"));
-                    facture.setIdAgent(rs.getInt("id_agent"));
-                    // Pour les bons liés, récupérer via FactureBonPilotageDAO
+                    facture.setId(rs.getInt(1));
                 }
             }
         }
-        return facture;
     }
 
     public List<Facture> trouverToutes() throws Exception {
-        String sql = "SELECT * FROM facture";
         List<Facture> factures = new ArrayList<>();
-
+        String sql = "SELECT * FROM facture ORDER BY date_generation DESC";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
             while (rs.next()) {
-                Facture facture = new Facture();
-                facture.setId(rs.getInt("id"));
-                facture.setNumeroFacture(rs.getString("numero_facture"));
-                facture.setDateGeneration(rs.getDate("date_generation"));
-                facture.setMontantTotal(rs.getDouble("montant_total"));
-                facture.setIdAgent(rs.getInt("id_agent"));
-                factures.add(facture);
+                factures.add(mapFacture(rs));
             }
         }
         return factures;
     }
 
-    public void mettreAJour(Facture facture) throws Exception {
-        String sql = "UPDATE facture SET numero_facture = ?, date_generation = ?, montant_total = ?, id_agent = ? WHERE id = ?";
-
+    public Facture trouverParId(int id) throws Exception {
+        String sql = "SELECT * FROM facture WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setString(1, facture.getNumeroFacture());
-            ps.setDate(2, new java.sql.Date(facture.getDateGeneration().getTime()));
-            ps.setDouble(3, facture.getMontantTotal());
-            ps.setInt(4, facture.getIdAgent());
-            ps.setInt(5, facture.getId());
-
-            ps.executeUpdate();
-        }
-    }
-
-
-    public void supprimer(int id) throws Exception {
-        String sql = "DELETE FROM facture WHERE id = ?";
-
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-
-            ps.setInt(1, id);
-            ps.executeUpdate();
-        }
-    }
-    public Facture trouverParBonPilotageId(int bonPilotageId) throws Exception {
-        String sql = "SELECT f.* FROM facture f " +
-                     "JOIN facture_bon_pilotage fb ON f.id = fb.id_facture " +
-                     "WHERE fb.id_mouvement = ?";
-        Facture facture = null;
-        try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, bonPilotageId);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    facture = new Facture();
-                    facture.setId(rs.getInt("id"));
-                    facture.setNumeroFacture(rs.getString("numero_facture"));
-                    facture.setDateGeneration(rs.getDate("date_generation"));
-                    facture.setMontantTotal(rs.getDouble("montant_total"));
-                    facture.setIdAgent(rs.getInt("id_agent"));
-                }
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, id);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return mapFacture(rs);
             }
         }
-        return facture;
+        return null;
+    }
+
+    public Facture trouverParNumero(String numeroFacture) throws Exception {
+        String sql = "SELECT * FROM facture WHERE numero_facture = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, numeroFacture);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) return mapFacture(rs);
+            }
+        }
+        return null;
+    }
+
+    /** Utilitaire de mapping */
+    private Facture mapFacture(ResultSet rs) throws Exception {
+        Facture f = new Facture();
+        f.setId(rs.getInt("id"));
+        f.setNumeroFacture(rs.getString("numero_facture"));
+        f.setDateGeneration(rs.getTimestamp("date_generation"));
+        f.setMontantTotal(rs.getDouble("montant_total"));
+        f.setIdAgent(rs.getInt("id_agent"));
+        // Les ids des bons associés seront récupérés via FactureBonPilotageDAO
+        return f;
     }
 }

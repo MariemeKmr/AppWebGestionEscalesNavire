@@ -59,7 +59,7 @@
 			</div>
             <div class="dashboard-card">
                 <i class="fas fa-file-invoice-dollar"></i>
-                <a href="#"><p>Facturation</p></a>
+                <a href="${pageContext.request.contextPath}/facture/list"><p>Facturation</p></a>
             </div>
             <div class="dashboard-card">
                 <i class="fas fa-chart-line"></i>
@@ -67,7 +67,7 @@
             </div>
             <div class="dashboard-card">
                 <i class="fas fa-history"></i>
-                <a href="#"><p>Historique du système</p></a>
+                <a href="${pageContext.request.contextPath}/jsp/historique.jsp"><p>Historique du système</p></a>
             </div>
         <% } %>
         

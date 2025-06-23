@@ -1,64 +1,96 @@
 package com.gestionescale.service.implementation;
 
-import com.gestionescale.dao.implementation.BonPilotageDAO;
-import com.gestionescale.dao.implementation.FactureBonPilotageDAO;
-import com.gestionescale.dao.implementation.FactureDAO;
-import com.gestionescale.model.BonPilotage;
-import com.gestionescale.model.Facture;
-import com.gestionescale.service.interfaces.IFactureService;
+import com.gestionescale.dao.implementation.*;
+import com.gestionescale.model.*;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
-public class FactureService implements IFactureService {
-    private FactureDAO factureDAO;
-    private BonPilotageDAO bonPilotageDAO;
-    private FactureBonPilotageDAO factureBonPilotageDAO;
+public class FactureService {
+    private FactureDAO factureDAO = new FactureDAO();
+    private BonPilotageDAO bonPilotageDAO = new BonPilotageDAO();
+    private FactureBonPilotageDAO factureBonPilotageDAO = new FactureBonPilotageDAO();
+    private EscaleDAO escaleDAO = new EscaleDAO();
 
-    public FactureService() {
-        this.factureDAO = new FactureDAO();
-        this.bonPilotageDAO = new BonPilotageDAO();
-        this.factureBonPilotageDAO = new FactureBonPilotageDAO();
+    // Génère et sauvegarde une facture pour une escale terminée, avec les bons associés
+    public Facture genererFacturePourEscale(String numeroEscale, int idAgent) throws Exception {
+        Escale escale = escaleDAO.getEscaleParNumero(numeroEscale);
+        if (escale == null) throw new Exception("Escale introuvable.");
+
+        // Vérification métier : bon de SORTIE obligatoire
+        if (!bonPilotageDAO.existeBonDeCeTypePourEscale(numeroEscale, "SORTIE")) {
+            throw new Exception("Impossible de facturer : l'escale n'a pas de bon de SORTIE.");
+        }
+
+        List<BonPilotage> bons = bonPilotageDAO.findByNumeroEscale(numeroEscale);
+        if (bons == null || bons.isEmpty()) throw new Exception("Aucun bon de pilotage pour cette escale.");
+
+        double montantTotal = bons.stream().mapToDouble(BonPilotage::getMontEscale).sum();
+
+        Facture facture = new Facture();
+        String numeroFacture = "FAC-" + numeroEscale + "-" + System.currentTimeMillis();
+        facture.setNumeroFacture(numeroFacture);
+        facture.setNumeroEscale(numeroEscale);
+        facture.setDateGeneration(new Date());
+        facture.setMontantTotal(montantTotal);
+        facture.setIdAgent(idAgent);
+
+        factureDAO.ajouterFacture(facture);
+
+        List<Integer> bonsIds = new ArrayList<>();
+        for (BonPilotage bon : bons) {
+            factureBonPilotageDAO.ajouterAssociation(facture.getId(), bon.getIdMouvement());
+            bonsIds.add(bon.getIdMouvement());
+        }
+        facture.setBonsPilotageIds(bonsIds);
+
+        // Marquer l'escale comme "facturée"
+        escaleDAO.marquerFacturee(numeroEscale);
+
+        return facture;
     }
 
-    @Override
-    public void genererFactureAPartirBonPilotage(int bonPilotageId) {
-        try {
-            BonPilotage bon = bonPilotageDAO.getBonPilotageParId(bonPilotageId);
-            double montant = bon.getTypeMouvement().getPrixTypeMvt();
-
-            Facture facture = new Facture();
-            // Tu peux générer un numeroFacture ici selon ta logique
-            facture.setNumeroFacture("FAC-" + System.currentTimeMillis());
-            facture.setMontantTotal(montant);
-            facture.setDateGeneration(new Date());
-            // facture.setIdAgent(...); // à compléter selon ton contexte
-
-            factureDAO.ajouterFacture(facture);
-
-            // Associer la facture au bon de pilotage
-            factureBonPilotageDAO.ajouterAssociation(facture.getId(), bonPilotageId);
-        } catch (Exception e) {
-            throw new RuntimeException("Erreur lors de la génération de la facture", e);
+    public List<Facture> getAllFactures() throws Exception {
+        List<Facture> factures = factureDAO.trouverToutes();
+        for (Facture f : factures) {
+            List<Integer> ids = factureBonPilotageDAO.getBonsIdsByFacture(f.getId());
+            f.setBonsPilotageIds(ids);
+            // Enrichissement avec l'objet Escale
+            Escale escale = escaleDAO.getEscaleParNumero(f.getNumeroEscale());
+            f.setEscale(escale);
         }
+        return factures;
     }
 
-    @Override
-    public List<Facture> getAllFactures() {
-        try {
-            return factureDAO.trouverToutes();
-        } catch (Exception e) {
-            throw new RuntimeException("Erreur lors de la récupération des factures", e);
+    public Facture getFactureById(int id) throws Exception {
+        Facture f = factureDAO.trouverParId(id);
+        if (f != null) {
+            List<Integer> ids = factureBonPilotageDAO.getBonsIdsByFacture(id);
+            f.setBonsPilotageIds(ids);
         }
+        return f;
     }
 
-    @Override
-    public Facture getFactureByBonPilotageId(int bonPilotageId) {
-        try {
-            // Il te faut une méthode dédiée dans FactureDAO pour faire la jointure !
-            return factureDAO.trouverParBonPilotageId(bonPilotageId);
-        } catch (Exception e) {
-            throw new RuntimeException("Erreur lors de la récupération de la facture", e);
+    public Facture getFactureByNumero(String numeroFacture) throws Exception {
+        Facture f = factureDAO.trouverParNumero(numeroFacture);
+        if (f != null) {
+            List<Integer> ids = factureBonPilotageDAO.getBonsIdsByFacture(f.getId());
+            f.setBonsPilotageIds(ids);
         }
+        return f;
+    }
+
+    // Récupère la liste des escales terminées non facturées
+    public List<Escale> getEscalesTermineesSansFacture() throws Exception {
+        return escaleDAO.findEscalesTermineesSansFacture();
+    }
+
+    // Récupère une escale par son numéro
+    public Escale getEscaleParNumero(String numeroEscale) throws Exception {
+        return escaleDAO.getEscaleParNumero(numeroEscale);
+    }
+
+    // Récupère les bons de pilotage d'une escale
+    public List<BonPilotage> getBonsByNumeroEscale(String numeroEscale) throws Exception {
+        return bonPilotageDAO.findByNumeroEscale(numeroEscale);
     }
 }

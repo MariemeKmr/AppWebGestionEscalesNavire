@@ -19,7 +19,7 @@
             <input type="hidden" name="idMouvement" value="${bon.idMouvement}" />
         </c:if>
 
-        <label>Escale (navires en escale non terminée) :</label>
+        <label>Navires en escale :</label>
         <select name="numeroEscale" required>
             <option value="">-- Sélectionner une escale --</option>
             <c:forEach var="escale" items="${escalesEnCours}">
@@ -36,7 +36,7 @@
             <c:forEach var="type" items="${typesMouvement}">
                 <option value="${type.codeTypeMvt}"
                     <c:if test="${not empty bon.typeMouvement && bon.typeMouvement.codeTypeMvt == type.codeTypeMvt}">selected</c:if>>
-                    ${type.nomTypeMvt}
+                    ${type.libelleTypeMvt}
                 </option>
             </c:forEach>
         </select>
@@ -50,9 +50,9 @@
         <label>Poste à quai :</label>
         <input type="text" name="posteAQuai" value="${not empty bon.posteAQuai ? bon.posteAQuai : ''}" />
 
-        <label>Prix :</label>
-        <input type="number" step="0.01" name="prix" value="${not empty bon.prix ? bon.prix : ''}" required />
-
+		<label>Prix :</label>
+		<input type="number" step="0.01" name="montEscale" value="${not empty bon.montEscale ? bon.montEscale : ''}" required />
+        
         <button type="submit" class="btn-submit">Enregistrer</button>
         <a href="${pageContext.request.contextPath}/bonpilotage/list" class="btn-back">Annuler</a>
     </form>

@@ -10,7 +10,9 @@ public class Facture {
     private double montantTotal;
     private int idAgent; // Utilisateur qui a généré la facture
     private List<Integer> bonsPilotageIds; // Liste des idMouvement associés à la facture
-
+    private String numeroEscale;
+    private Escale escale;
+    
     public Facture() {}
 
     public Facture(int id, String numeroFacture, Date dateGeneration, double montantTotal, int idAgent, List<Integer> bonsPilotageIds) {
@@ -40,4 +42,10 @@ public class Facture {
 
     public List<Integer> getBonsPilotageIds() { return bonsPilotageIds; }
     public void setBonsPilotageIds(List<Integer> bonsPilotageIds) { this.bonsPilotageIds = bonsPilotageIds; }
+    
+    public String getNumeroEscale() { return numeroEscale; }
+    public void setNumeroEscale(String numeroEscale) { this.numeroEscale = numeroEscale; }
+
+    public Escale getEscale() { return escale; }
+    public void setEscale(Escale escale) { this.escale = escale; }
 }

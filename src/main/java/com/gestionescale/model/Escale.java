@@ -12,13 +12,15 @@ public class Escale {
     private Double prixSejour;
     private String zone;
     private Consignataire consignataire;
+    private boolean terminee;
+    private boolean facturee;
 
     // Constructeur sans paramètre (par défaut)
     public Escale() {}
 
-    // Constructeur avec tous les paramètres
+    // Constructeur complet
     public Escale(String numeroEscale, Date debutEscale, Date finEscale, Navire myNavire, Double prixUnitaire,
-                  Double prixSejour, String zone, Consignataire consignataire) {
+                  Double prixSejour, String zone, Consignataire consignataire, boolean terminee, boolean facturee) {
         this.numeroEscale = numeroEscale;
         this.debutEscale = debutEscale;
         this.finEscale = finEscale;
@@ -27,6 +29,8 @@ public class Escale {
         this.prixSejour = prixSejour;
         this.zone = zone;
         this.consignataire = consignataire;
+        this.terminee = terminee;
+        this.facturee = facturee;
     }
 
     public String getNumeroEscale() {
@@ -91,5 +95,21 @@ public class Escale {
 
     public void setConsignataire(Consignataire consignataire) {
         this.consignataire = consignataire;
+    }
+
+    public boolean getTerminee() {
+        return terminee;
+    }
+
+    public void setTerminee(boolean terminee) {
+        this.terminee = terminee;
+    }
+
+    public boolean getFacturee() {
+        return facturee;
+    }
+
+    public void setFacturee(boolean facturee) {
+        this.facturee = facturee;
     }
 }

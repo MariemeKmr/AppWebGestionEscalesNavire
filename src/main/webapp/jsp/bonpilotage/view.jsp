@@ -18,11 +18,11 @@
         </tr>
         <tr>
             <th>Consignataire</th>
-            <td>${bon.monEscale.myNavire.consignataire.nomConsignataire}</td>
+            <td>${bon.monEscale.consignataire.raisonSociale}</td>
         </tr>
         <tr>
             <th>Type de mouvement</th>
-            <td>${bon.typeMouvement.nomTypeMvt}</td>
+            <td>${bon.typeMouvement.libelleTypeMvt}</td>
         </tr>
         <tr>
             <th>Date début</th>
@@ -38,7 +38,7 @@
         </tr>
         <tr>
             <th>Prix</th>
-            <td>${bon.prix}</td>
+            <td><fmt:formatNumber value="${bon.montEscale}" type="number" groupingUsed="true"/> F CFA</td>
         </tr>
     </table>
     <a href="${pageContext.request.contextPath}/bonpilotage/list" class="btn-back" style="margin-top:18px;">Retour à la liste</a>

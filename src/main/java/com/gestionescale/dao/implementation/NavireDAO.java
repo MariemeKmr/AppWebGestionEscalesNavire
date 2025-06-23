@@ -258,7 +258,6 @@ public class NavireDAO implements INavireDAO {
                     Navire navire = new Navire();
                     navire.setNumeroNavire(rs.getString("numeroNavire"));
                     navire.setNomNavire(rs.getString("nomNavire"));
-                    // Ajoute ici les autres champs si besoin
                     navires.add(navire);
                 }
             }
