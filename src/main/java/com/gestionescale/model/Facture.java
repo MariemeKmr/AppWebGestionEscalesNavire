@@ -8,11 +8,12 @@ public class Facture {
     private String numeroFacture;
     private Date dateGeneration;
     private double montantTotal;
-    private int idAgent; // Utilisateur qui a généré la facture
-    private List<Integer> bonsPilotageIds; // Liste des idMouvement associés à la facture
+    private int idAgent;
     private String numeroEscale;
     private Escale escale;
-    
+    private List<Integer> bonsPilotageIds;
+    private List<BonPilotage> bonsPilotage;
+
     public Facture() {}
 
     public Facture(int id, String numeroFacture, Date dateGeneration, double montantTotal, int idAgent, List<Integer> bonsPilotageIds) {
@@ -42,10 +43,25 @@ public class Facture {
 
     public List<Integer> getBonsPilotageIds() { return bonsPilotageIds; }
     public void setBonsPilotageIds(List<Integer> bonsPilotageIds) { this.bonsPilotageIds = bonsPilotageIds; }
-    
+
     public String getNumeroEscale() { return numeroEscale; }
     public void setNumeroEscale(String numeroEscale) { this.numeroEscale = numeroEscale; }
 
     public Escale getEscale() { return escale; }
     public void setEscale(Escale escale) { this.escale = escale; }
+
+    public List<BonPilotage> getBonsPilotage() {
+        return bonsPilotage;
+    }
+    public void setBonsPilotage(List<BonPilotage> bonsPilotage) {
+        this.bonsPilotage = bonsPilotage;
+    }
+
+    /**
+     * Calcule et retourne la somme des montants de tous les bons de pilotage liés à cette facture.
+     */
+    public double getSommeBons() {
+        if (bonsPilotage == null) return 0.0;
+        return bonsPilotage.stream().mapToDouble(BonPilotage::getMontEscale).sum();
+    }
 }

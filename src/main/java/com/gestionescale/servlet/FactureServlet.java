@@ -2,6 +2,7 @@ package com.gestionescale.servlet;
 
 import com.gestionescale.model.*;
 import com.gestionescale.service.implementation.FactureService;
+import com.gestionescale.dao.implementation.UtilisateurDAO;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -37,18 +38,15 @@ public class FactureServlet extends HttpServlet {
                 request.getRequestDispatcher("/jsp/facture/form.jsp").forward(request, response);
 
             } else if ("view".equals(action)) {
-                // Vue d'une facture individuelle
                 int id = Integer.parseInt(request.getParameter("id"));
                 Facture facture = factureService.getFactureById(id);
                 if (facture == null) throw new Exception("Facture introuvable");
-                String numeroEscale = facture.getNumeroFacture().split("-")[1];
-                Escale escale = factureService.getEscaleParNumero(numeroEscale);
-                List<BonPilotage> bons = factureService.getBonsByNumeroEscale(numeroEscale);
+                // Récupère l'agent responsable de la facture
+                UtilisateurDAO utilisateurDAO = new UtilisateurDAO();
+                Utilisateur agent = utilisateurDAO.getUtilisateurById(facture.getIdAgent());
                 request.setAttribute("facture", facture);
-                request.setAttribute("escale", escale);
-                request.setAttribute("bons", bons);
+                request.setAttribute("agent", agent);
                 request.getRequestDispatcher("/jsp/facture/view.jsp").forward(request, response);
-
             } else {
                 // Liste de toutes les factures
                 List<Facture> factures = factureService.getAllFactures();

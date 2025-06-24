@@ -59,4 +59,6 @@ public class BonPilotageService {
     public boolean existeBonDeCeTypePourEscale(String numeroEscale, String codeTypeMvt) throws Exception {
         return new BonPilotageDAO().existeBonDeCeTypePourEscale(numeroEscale, codeTypeMvt);
     }
+    
+    
 }

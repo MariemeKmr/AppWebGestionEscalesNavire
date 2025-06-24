@@ -8,7 +8,6 @@ import com.gestionescale.dao.implementation.EscaleDAO;
 import com.gestionescale.dao.implementation.TypeMouvementDAO;
 
 import jakarta.servlet.ServletException;
-import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,10 +28,8 @@ public class BonPilotageServlet extends HttpServlet {
                         : service.getTousLesBonsPilotage();
                 req.setAttribute("bons", bons);
                 req.getRequestDispatcher("/jsp/bonpilotage/list.jsp").forward(req, resp);
-
             } else if (path.equals("/new")) {
-                List<Escale> escalesEnCours = new EscaleDAO().getToutesLesEscales();
-                List<TypeMouvement> allTypes = new TypeMouvementDAO().getTousLesTypesMouvement();
+            	List<Escale> escalesEnCours = new EscaleDAO().getEscalesSansBonSortie();                List<TypeMouvement> allTypes = new TypeMouvementDAO().getTousLesTypesMouvement();
                 List<TypeMouvement> typesMouvement = new ArrayList<>();
                 for (TypeMouvement t : allTypes) {
                     String lib = t.getLibelleTypeMvt();
@@ -49,14 +46,11 @@ public class BonPilotageServlet extends HttpServlet {
                 }
                 req.setAttribute("typesMouvement", typesMouvement);
                 req.setAttribute("escalesEnCours", escalesEnCours);
-                req.setAttribute("typesMouvement", typesMouvement);
                 req.getRequestDispatcher("/jsp/bonpilotage/form.jsp").forward(req, resp);
-
             } else if (path.equals("/edit")) {
                 int id = Integer.parseInt(req.getParameter("id"));
                 BonPilotage bon = service.getBonPilotageParId(id);
-                List<Escale> escalesEnCours = new EscaleDAO().getToutesLesEscales();
-                List<TypeMouvement> allTypes = new TypeMouvementDAO().getTousLesTypesMouvement();
+                List<Escale> escalesEnCours = new EscaleDAO().getEscalesSansBonSortie();                List<TypeMouvement> allTypes = new TypeMouvementDAO().getTousLesTypesMouvement();
                 List<TypeMouvement> typesMouvement = new ArrayList<>();
                 for (TypeMouvement t : allTypes) {
                     String lib = t.getLibelleTypeMvt();
@@ -71,17 +65,15 @@ public class BonPilotageServlet extends HttpServlet {
                         typesMouvement.add(t);
                     }
                 }
-                req.setAttribute("typesMouvement", typesMouvement);                req.setAttribute("bon", bon);
-                req.setAttribute("escalesEnCours", escalesEnCours);
                 req.setAttribute("typesMouvement", typesMouvement);
+                req.setAttribute("bon", bon);
+                req.setAttribute("escalesEnCours", escalesEnCours);
                 req.getRequestDispatcher("/jsp/bonpilotage/form.jsp").forward(req, resp);
-
             } else if (path.equals("/view")) {
                 int id = Integer.parseInt(req.getParameter("id"));
                 BonPilotage bon = service.getBonPilotageParId(id);
                 req.setAttribute("bon", bon);
                 req.getRequestDispatcher("/jsp/bonpilotage/view.jsp").forward(req, resp);
-
             } else if (path.equals("/delete")) {
                 int id = Integer.parseInt(req.getParameter("id"));
                 service.supprimerBonPilotage(id);
@@ -111,10 +103,29 @@ public class BonPilotageServlet extends HttpServlet {
             if (path.equals("/insert")) {
                 BonPilotage bon = remplirBonDepuisRequest(req, false);
 
-                // Vérification unicité pour Entree au port / Sortie du port
                 String libelleMvt = bon.getTypeMouvement().getLibelleTypeMvt();
                 String codeTypeMvt = bon.getTypeMouvement().getCodeTypeMvt();
                 String numeroEscale = bon.getMonEscale().getNumeroEscale();
+
+                // Règle 1 : Impossible d'ajouter un bon autre que "Entree au port" sans bon d'entrée
+                if (!"Entree au port".equalsIgnoreCase(libelleMvt)) {
+                    boolean aEntree = service.existeBonDeCeTypePourEscale(numeroEscale, "ENTREE");
+                    if (!aEntree) {
+                        req.setAttribute("error", "Impossible d'ajouter un bon de type '" + libelleMvt + "' : aucun bon d'ENTREE n'existe encore pour cette escale.");
+                        forwardToFormWithLists(req, resp);
+                        return;
+                    }
+                }
+
+                // Règle 2 : Impossible d'ajouter un bon si "Sortie du port" existe déjà
+                boolean aSortie = service.existeBonDeCeTypePourEscale(numeroEscale, "SORTIE");
+                if (aSortie) {
+                    req.setAttribute("error", "Impossible d'ajouter un bon : l'escale est déjà terminée (bon de SORTIE existant).");
+                    forwardToFormWithLists(req, resp);
+                    return;
+                }
+
+                // Vérification unicité pour Entree au port / Sortie du port
                 if ("Entree au port".equalsIgnoreCase(libelleMvt) || "Sortie du port".equalsIgnoreCase(libelleMvt)) {
                     boolean existe = service.existeBonDeCeTypePourEscale(numeroEscale, codeTypeMvt);
                     if (existe) {
@@ -138,7 +149,7 @@ public class BonPilotageServlet extends HttpServlet {
             forwardToFormWithLists(req, resp);
         }
     }
-    
+
     private BonPilotage remplirBonDepuisRequest(HttpServletRequest req, boolean isUpdate) throws Exception {
         BonPilotage bon = new BonPilotage();
         if (isUpdate && req.getParameter("idMouvement") != null && !req.getParameter("idMouvement").isEmpty()) {
@@ -179,8 +190,7 @@ public class BonPilotageServlet extends HttpServlet {
 
     private void forwardToFormWithLists(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-            List<Escale> escalesEnCours = new EscaleDAO().getToutesLesEscales();
-            List<TypeMouvement> allTypes = new TypeMouvementDAO().getTousLesTypesMouvement();
+        	List<Escale> escalesEnCours = new EscaleDAO().getEscalesSansBonSortie();            List<TypeMouvement> allTypes = new TypeMouvementDAO().getTousLesTypesMouvement();
             List<TypeMouvement> typesMouvement = new ArrayList<>();
             for (TypeMouvement t : allTypes) {
                 String lib = t.getLibelleTypeMvt();
@@ -195,8 +205,8 @@ public class BonPilotageServlet extends HttpServlet {
                     typesMouvement.add(t);
                 }
             }
-            req.setAttribute("typesMouvement", typesMouvement);            req.setAttribute("escalesEnCours", escalesEnCours);
             req.setAttribute("typesMouvement", typesMouvement);
+            req.setAttribute("escalesEnCours", escalesEnCours);
         } catch (Exception e) {
             req.setAttribute("error", "Erreur lors du chargement des listes : " + e.getMessage());
         }

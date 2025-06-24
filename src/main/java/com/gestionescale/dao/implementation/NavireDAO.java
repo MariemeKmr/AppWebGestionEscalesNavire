@@ -80,7 +80,6 @@ public class NavireDAO implements INavireDAO {
                 }
             }
         }
-
         return navire;
     }
 

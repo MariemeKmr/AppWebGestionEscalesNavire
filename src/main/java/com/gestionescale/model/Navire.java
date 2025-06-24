@@ -26,6 +26,10 @@ public class Navire {
 		this.armateur=armateur;
 		}
 
+	
+	public String getDebugVersion() { return "NAVIRE_VERSION_20250624"; }
+	
+	
     // Getters et Setters
     public String getNumeroNavire() { 
     	return numeroNavire;
@@ -82,6 +86,4 @@ public class Navire {
 	public void setArmateur(Armateur armateur) {
 	    this.armateur = armateur;
 	}
-
 }
-

@@ -10,7 +10,7 @@ public class BonPilotage {
     private Date dateFinBon;
     private String posteaQuai;
     private TypeMouvement typeMouvement;
-
+    
     // Constructeur sans paramètre
     public BonPilotage() {}
 

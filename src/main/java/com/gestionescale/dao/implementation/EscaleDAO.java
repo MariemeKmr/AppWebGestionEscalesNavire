@@ -145,7 +145,10 @@ public class EscaleDAO implements IEscaleDAO {
         escale.setZone(rs.getString("zone"));
         escale.setTerminee(rs.getBoolean("terminee"));
         escale.setFacturee(rs.getBoolean("facturee"));
-        Navire navire = navireDAO.getNavireParNumero(rs.getString("numeroNavire"));
+        String numeroNavire = rs.getString("numeroNavire");
+        System.out.println("DEBUG EscaleDAO : numeroNavire=[" + numeroNavire + "]");
+        Navire navire = navireDAO.getNavireParNumero(numeroNavire);
+        System.out.println("DEBUG EscaleDAO : navire trouvé = " + navire);
         escale.setMyNavire(navire);
         if (navire != null) {
             escale.setConsignataire(navire.getConsignataire());
@@ -153,6 +156,20 @@ public class EscaleDAO implements IEscaleDAO {
         return escale;
     }
 
+    public List<Escale> getEscalesSansBonSortie() throws Exception {
+        List<Escale> liste = new ArrayList<>();
+        String sql = "SELECT * FROM escale e WHERE NOT EXISTS (" +
+                     "SELECT 1 FROM bonpilotage b WHERE b.numeroEscale = e.numeroEscale AND b.codeTypeMvt = 'SORTIE')";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Escale escale = mapEscale(rs);
+                liste.add(escale);
+            }
+        }
+        return liste;
+    }
 
     public void updateTerminee(String numeroEscale, boolean terminee) throws SQLException {
         String sql = "UPDATE Escale SET terminee = ? WHERE numeroEscale = ?";
