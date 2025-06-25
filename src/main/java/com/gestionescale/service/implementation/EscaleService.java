@@ -23,7 +23,9 @@ public class EscaleService implements IEscaleService {
             throw new RuntimeException("Erreur lors de l’ajout de l’escale", e);
         }
     }
-
+    public List<Escale> getEscalesTermineesSansFacture() throws SQLException {
+        return escaleDAO.getEscalesTermineesSansFacture();
+    }
     public Escale getEscaleParNumero(String numeroEscale) {
         try {
             return escaleDAO.getEscaleParNumero(numeroEscale);

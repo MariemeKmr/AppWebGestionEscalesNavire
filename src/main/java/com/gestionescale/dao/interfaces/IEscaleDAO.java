@@ -10,4 +10,5 @@ public interface IEscaleDAO {
     List<Escale> getToutesLesEscales() throws SQLException;
     void modifierEscale(Escale escale) throws SQLException;
     void supprimerEscale(String numeroEscale) throws SQLException;
+	List<Escale> getEscalesTermineesSansFacture() throws SQLException;
 }

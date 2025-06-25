@@ -146,9 +146,9 @@ public class EscaleDAO implements IEscaleDAO {
         escale.setTerminee(rs.getBoolean("terminee"));
         escale.setFacturee(rs.getBoolean("facturee"));
         String numeroNavire = rs.getString("numeroNavire");
-        System.out.println("DEBUG EscaleDAO : numeroNavire=[" + numeroNavire + "]");
+//        System.out.println("DEBUG EscaleDAO : numeroNavire=[" + numeroNavire + "]");
         Navire navire = navireDAO.getNavireParNumero(numeroNavire);
-        System.out.println("DEBUG EscaleDAO : navire trouvé = " + navire);
+//        System.out.println("DEBUG EscaleDAO : navire trouvé = " + navire);
         escale.setMyNavire(navire);
         if (navire != null) {
             escale.setConsignataire(navire.getConsignataire());
@@ -180,4 +180,22 @@ public class EscaleDAO implements IEscaleDAO {
             stmt.executeUpdate();
         }
     }
-}
+
+    @Override
+    public List<Escale> getEscalesTermineesSansFacture() throws SQLException {
+        List<Escale> escales = new ArrayList<>();
+        String sql = "SELECT e.* " +
+                     "FROM escale e " +
+                     "WHERE EXISTS (SELECT 1 FROM bonpilotage bp WHERE bp.numeroEscale = e.numeroEscale AND bp.codeTypeMvt = 'SORTIE') " +
+                     "AND NOT EXISTS (SELECT 1 FROM facture f WHERE f.numero_escale COLLATE utf8mb4_unicode_ci = e.numeroEscale)";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()) {
+                Escale escale = mapEscale(rs);
+                escales.add(escale);
+            }
+        }
+        return escales;
+    }
+  }

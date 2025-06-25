@@ -11,14 +11,10 @@ public class FactureService {
     private FactureBonPilotageDAO factureBonPilotageDAO = new FactureBonPilotageDAO();
     private EscaleDAO escaleDAO = new EscaleDAO();
 
-    /**
-     * Génère et sauvegarde une facture pour une escale terminée, avec les bons associés.
-     */
     public Facture genererFacturePourEscale(String numeroEscale, int idAgent) throws Exception {
         Escale escale = escaleDAO.getEscaleParNumero(numeroEscale);
         if (escale == null) throw new Exception("Escale introuvable.");
 
-        // Vérification métier : bon de SORTIE obligatoire
         if (!bonPilotageDAO.existeBonDeCeTypePourEscale(numeroEscale, "SORTIE")) {
             throw new Exception("Impossible de facturer : l'escale n'a pas de bon de SORTIE.");
         }
@@ -26,7 +22,6 @@ public class FactureService {
         List<BonPilotage> bons = bonPilotageDAO.findByNumeroEscale(numeroEscale);
         if (bons == null || bons.isEmpty()) throw new Exception("Aucun bon de pilotage pour cette escale.");
 
-        // SOMME des bons + prix séjour
         double montantBons = bons.stream().mapToDouble(BonPilotage::getMontEscale).sum();
         double montantTotal = escale.getPrixSejour() + montantBons;
 
@@ -38,7 +33,6 @@ public class FactureService {
         facture.setIdAgent(idAgent);
         facture.setNumeroEscale(numeroEscale);
 
-        // Enrichissement essentiel pour l'affichage
         facture.setEscale(escale);
         facture.setBonsPilotage(bons);
 
@@ -51,36 +45,26 @@ public class FactureService {
         }
         facture.setBonsPilotageIds(bonsIds);
 
-        // Marquer l'escale comme "facturée"
         escaleDAO.marquerFacturee(numeroEscale);
 
         return facture;
     }
 
-    /**
-     * Retourne la liste de toutes les factures, enrichies avec escale et bons.
-     */
     public List<Facture> getAllFactures() throws Exception {
         List<Facture> factures = factureDAO.trouverToutes();
         for (Facture f : factures) {
-            // Enrichissement avec l'objet Escale
             Escale escale = escaleDAO.getEscaleParNumero(f.getNumeroEscale());
             f.setEscale(escale);
 
-            // Associer la liste complète des bons
             List<BonPilotage> bons = bonPilotageDAO.findByNumeroEscale(f.getNumeroEscale());
             f.setBonsPilotage(bons);
 
-            // Associer les IDs des bons (optionnel pour affichage)
             List<Integer> ids = factureBonPilotageDAO.getBonsIdsByFacture(f.getId());
             f.setBonsPilotageIds(ids);
         }
         return factures;
     }
 
-    /**
-     * Retourne une facture à partir de son id (avec enrichissement escale/bons).
-     */
     public Facture getFactureById(int id) throws Exception {
         Facture f = factureDAO.trouverParId(id);
         if (f != null) {
@@ -92,52 +76,72 @@ public class FactureService {
             for (Integer bonId : ids) {
                 BonPilotage bon = bonPilotageDAO.getBonPilotageParId(bonId);
                 if (bon != null) bons.add(bon);
-             }
+            }
             f.setBonsPilotage(bons);
             f.setBonsPilotageIds(ids);
         }
         return f;
     }
 
-    /**
-     * Retourne une facture à partir de son numéro (avec enrichissement escale/bons).
-     */
-    public Facture getFactureByNumero(String numeroFacture) throws Exception {
-        Facture f = factureDAO.trouverParNumero(numeroFacture);
+    public Facture getFactureByNumero(int numeroFacture) throws Exception {
+        Facture f = factureDAO.trouverParId(numeroFacture);
         if (f != null) {
-            // Enrichissement avec l'objet Escale
             Escale escale = escaleDAO.getEscaleParNumero(f.getNumeroEscale());
             f.setEscale(escale);
 
-            // Associer la liste complète des bons
             List<BonPilotage> bons = bonPilotageDAO.findByNumeroEscale(f.getNumeroEscale());
             f.setBonsPilotage(bons);
 
-            // Associer les IDs des bons (optionnel pour affichage)
             List<Integer> ids = factureBonPilotageDAO.getBonsIdsByFacture(f.getId());
             f.setBonsPilotageIds(ids);
         }
         return f;
     }
 
-    /**
-     * Récupère la liste des escales terminées non facturées.
-     */
     public List<Escale> getEscalesTermineesSansFacture() throws Exception {
         return escaleDAO.findEscalesTermineesSansFacture();
     }
 
-    /**
-     * Récupère une escale par son numéro.
-     */
     public Escale getEscaleParNumero(String numeroEscale) throws Exception {
         return escaleDAO.getEscaleParNumero(numeroEscale);
     }
 
-    /**
-     * Récupère les bons de pilotage d'une escale.
-     */
     public List<BonPilotage> getBonsByNumeroEscale(String numeroEscale) throws Exception {
         return bonPilotageDAO.findByNumeroEscale(numeroEscale);
+    }
+
+    public void modifierPrixSejourEtBons(int factureId, double nouveauPrixSejour, Map<Integer, Double> montantBons) throws Exception {
+        Facture facture = getFactureById(factureId);
+        if (facture == null) throw new Exception("Facture introuvable");
+
+        factureDAO.modifierPrixSejourEscale(facture.getNumeroEscale(), nouveauPrixSejour);
+
+        for (Map.Entry<Integer, Double> entry : montantBons.entrySet()) {
+            int idMouvement = entry.getKey();
+            double montant = entry.getValue();
+            factureDAO.modifierMontantBonPilotage(idMouvement, montant);
+        }
+
+        List<BonPilotage> bons = bonPilotageDAO.findByNumeroEscale(facture.getNumeroEscale());
+        double montantTotal = nouveauPrixSejour + bons.stream().mapToDouble(BonPilotage::getMontEscale).sum();
+
+        factureDAO.modifierMontantFacture(factureId, montantTotal);
+    }
+
+    public List<Facture> searchFactures(String query) throws Exception {
+        List<Facture> factures = factureDAO.rechercherFactures(query);
+        for (Facture f : factures) {
+            Escale escale = escaleDAO.getEscaleParNumero(f.getNumeroEscale());
+            f.setEscale(escale);
+            List<BonPilotage> bons = bonPilotageDAO.findByNumeroEscale(f.getNumeroEscale());
+            f.setBonsPilotage(bons);
+            List<Integer> ids = factureBonPilotageDAO.getBonsIdsByFacture(f.getId());
+            f.setBonsPilotageIds(ids);
+        }
+        return factures;
+    }
+
+    public void supprimerFacture(int id) throws Exception {
+        factureDAO.supprimerFacture(id);
     }
 }

@@ -13,6 +13,8 @@ public class Facture {
     private Escale escale;
     private List<Integer> bonsPilotageIds;
     private List<BonPilotage> bonsPilotage;
+    private String agentNom;
+
 
     public Facture() {}
 
@@ -56,6 +58,10 @@ public class Facture {
     public void setBonsPilotage(List<BonPilotage> bonsPilotage) {
         this.bonsPilotage = bonsPilotage;
     }
+    
+    public String getAgentNom() { return agentNom; }
+    public void setAgentNom(String agentNom) { this.agentNom = agentNom; }
+
 
     /**
      * Calcule et retourne la somme des montants de tous les bons de pilotage liés à cette facture.

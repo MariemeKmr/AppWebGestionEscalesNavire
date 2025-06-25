@@ -43,9 +43,12 @@
                 <td><fmt:formatDate value="${escale.debutEscale}" pattern="dd/MM/yyyy"/></td>
                 <td><fmt:formatDate value="${escale.finEscale}" pattern="dd/MM/yyyy"/></td>
                 <td>
-                    <a href="${pageContext.request.contextPath}/facture?action=form&escale=${escale.numeroEscale}" class="btn-new btn-sm">
-                        <i class="fas fa-file-invoice-dollar"></i> Générer facture
-                    </a>
+				<form action="${pageContext.request.contextPath}/facture" method="post" style="display:inline;">
+				    <input type="hidden" name="numeroEscale" value="${escale.numeroEscale}" />
+				    <button type="submit" class="btn-new btn-sm">
+				        <i class="fas fa-file-invoice-dollar"></i> Générer facture
+				    </button>
+				</form>
                 </td>
             </tr>
         </c:forEach>
