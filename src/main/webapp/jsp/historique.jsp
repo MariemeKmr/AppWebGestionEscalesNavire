@@ -12,6 +12,16 @@
     <c:if test="${not empty error}">
         <div class="alert alert-danger">${error}</div>
     </c:if>
+
+    <!-- Ajout d'un formulaire de recherche -->
+    <form method="get" action="${pageContext.request.contextPath}/historique" class="search-form">
+        <input type="text" name="recherche" placeholder="Recherche (ex: facture, utilisateur…)" value="${param.recherche}" />
+        <button type="submit" class="btn-submit">Rechercher</button>
+        <c:if test="${not empty param.recherche}">
+            <a href="${pageContext.request.contextPath}/historique" class="btn-back">Réinitialiser</a>
+        </c:if>
+    </form>
+
     <table>
         <thead>
             <tr>

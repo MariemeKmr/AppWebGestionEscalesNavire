@@ -14,6 +14,7 @@ public class Escale {
     private Consignataire consignataire;
     private boolean terminee;
     private boolean facturee;
+    private Facture facture;
 
     // Constructeur sans paramètre (par défaut)
     public Escale() {}
@@ -112,4 +113,17 @@ public class Escale {
     public void setFacturee(boolean facturee) {
         this.facturee = facturee;
     }
+    public boolean isFacturee() {
+        return facturee;
+    }
+
+    public void setFacture(Facture facture) {
+        this.facture = facture;
+    }
+    public Facture getFacture() {
+        return facture;
+    }
 }
+
+
+

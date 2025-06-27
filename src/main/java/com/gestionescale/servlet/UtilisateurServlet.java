@@ -1,6 +1,7 @@
 package com.gestionescale.servlet;
 
 import com.gestionescale.model.Utilisateur;
+import com.gestionescale.util.UtilisateurContext;
 import com.gestionescale.service.implementation.UtilisateurService;
 import java.io.IOException;
 import java.util.List;
@@ -42,6 +43,10 @@ public class UtilisateurServlet extends HttpServlet {
         String action = request.getParameter("action");
 
         try {
+        	// Récupère l'email de l'utilisateur connecté (par exemple stocké en session après login)
+        	String userMail = (String) request.getSession().getAttribute("userMail");
+        	UtilisateurContext.setMail(userMail);
+        	
             if ("new".equals(action)) {
                 Utilisateur utilisateur = new Utilisateur();
                 utilisateur.setNomComplet(request.getParameter("nomComplet"));
@@ -93,7 +98,10 @@ public class UtilisateurServlet extends HttpServlet {
     }
 
     private void deleteUtilisateur(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        int id = Integer.parseInt(request.getParameter("id"));
+    	// Récupère l'email de l'utilisateur connecté (par exemple stocké en session après login)
+    	String userMail = (String) request.getSession().getAttribute("userMail");
+    	UtilisateurContext.setMail(userMail);
+    	int id = Integer.parseInt(request.getParameter("id"));
         service.deleteUtilisateur(id);
         response.sendRedirect(request.getContextPath() + "/utilisateur?action=list");
     }

@@ -47,7 +47,9 @@ public class BonPilotageDAO implements IBonPilotageDAO {
     @Override
     public List<BonPilotage> getTousLesBons() throws SQLException {
         List<BonPilotage> liste = new ArrayList<>();
-        String sql = "SELECT * FROM bonpilotage";
+        String sql = "SELECT *\r\n"
+        		+ "FROM bonpilotage\r\n"
+        		+ "WHERE numeroEscale NOT IN (SELECT numero_escale FROM facture);";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {

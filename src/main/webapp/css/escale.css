@@ -253,3 +253,53 @@ select,
     box-shadow: none;
     opacity: 0.73;
 }
+
+.escale-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 18px;
+}
+
+.btn-new {
+    height: 40px; /* même hauteur que l'input */
+    display: flex;
+    align-items: center;
+    padding: 0 18px;
+    font-size: 1rem;
+    border-radius: 4px;
+    background: #007bff;
+    color: white;
+    border: none;
+    text-decoration: none;
+    transition: background 0.2s;
+}
+.btn-new:hover {
+    background: #0056b3;
+    color: white;
+}
+
+.search-input-group {
+    display: flex;
+    align-items: center;
+    flex: 1; /* Prend tout l'espace restant */
+    height: 40px;
+    position: relative;
+}
+
+.search-input-group input {
+    height: 40px;
+    width: 100%;
+    padding: 0 36px 0 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
+
+.search-input-group i {
+    position: absolute;
+    right: 12px;
+    color: #888;
+    font-size: 1rem;
+    pointer-events: none;
+}

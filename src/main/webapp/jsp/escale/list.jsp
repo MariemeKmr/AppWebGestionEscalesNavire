@@ -6,7 +6,19 @@
     <title>Liste des escales</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/navire.css">
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/escale.css">
+    <script>
+        // Recherche dynamique côté client (filtre le tableau)
+        function filterEscales() {
+            let input = document.getElementById('searchEscale');
+            let filter = input.value.toLowerCase();
+            let rows = document.querySelectorAll('tbody tr');
+            rows.forEach(row => {
+                let text = row.innerText.toLowerCase();
+                row.style.display = text.indexOf(filter) > -1 ? '' : 'none';
+            });
+        }
+    </script>
 </head>
 <body>
 <jsp:include page="/includes/header.jsp">
@@ -22,9 +34,23 @@
 
 <div class="content-container">
     <h2>Liste des escales</h2>
-    <a href="${pageContext.request.contextPath}/escale/new" class="btn-new">
-        <i class="fas fa-plus"></i> Ajouter une escale
-    </a>
+    
+    <div class="escale-toolbar">
+        <a href="${pageContext.request.contextPath}/escale/new" class="btn-new">
+            <i class="fas fa-plus"></i> Ajouter une escale
+        </a>
+        <div class="search-input-group">
+            <input type="text" id="searchEscale" placeholder="Recherche dynamique (numéro, navire, zone...)" onkeyup="filterEscales()" autocomplete="off">
+            <i class="fas fa-search"></i>
+        </div>
+    </div>
+
+	<div class="filter-bar">
+	    <a href="?filtre=" class="btn-filter ${empty filtre ? 'active' : ''}">Toutes</a>
+	    <a href="?filtre=prevues" class="btn-filter ${filtre == 'prevues' ? 'active' : ''}">Prévues</a>
+	    <a href="?filtre=enCours" class="btn-filter ${filtre == 'enCours' ? 'active' : ''}">En cours</a>
+	    <a href="?filtre=terminees" class="btn-filter ${filtre == 'terminees' ? 'active' : ''}">Terminées</a>
+	</div>
     <table>
         <thead>
             <tr>

@@ -3,6 +3,7 @@ package com.gestionescale.dao.implementation;
 import com.gestionescale.dao.interfaces.IEscaleDAO;
 import com.gestionescale.model.Escale;
 import com.gestionescale.model.Navire;
+import com.gestionescale.model.Facture;
 import com.gestionescale.util.DatabaseConnection;
 
 import java.sql.*;
@@ -114,10 +115,6 @@ public class EscaleDAO implements IEscaleDAO {
         }
     }
 
-    /**
-     * Retourne toutes les escales non facturées qui ont AU MOINS un bon de type SORTIE.
-     * On considère qu'une escale est "terminée" si elle possède un bon de sortie.
-     */
     public List<Escale> findEscalesTermineesSansFacture() throws SQLException {
         List<Escale> liste = new ArrayList<>();
         String sql = "SELECT * FROM Escale e " +
@@ -134,6 +131,70 @@ public class EscaleDAO implements IEscaleDAO {
         return liste;
     }
 
+    // Escales clôturées ET facturées (doivent avoir un bon de sortie ET une facture)
+    public List<Escale> getClotureesFacturees(Date debut, Date fin) throws SQLException {
+        List<Escale> list = new ArrayList<>();
+        String sql = "SELECT e.* FROM Escale e " +
+                "JOIN bonpilotage b ON b.numeroEscale = e.numeroEscale AND b.codeTypeMvt = 'SORTIE' " +
+                "JOIN facture f ON f.numero_escale = e.numeroEscale " +
+                "WHERE e.debutEscale BETWEEN ? AND ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDate(1, debut);
+            stmt.setDate(2, fin);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    Escale escale = mapEscale(rs);
+                    // Récupérer la facture liée si besoin (exemple)
+                    escale.setFacture(getFactureByNumeroEscale(escale.getNumeroEscale(), conn));
+                    list.add(escale);
+                }
+            }
+        }
+        return list;
+    }
+
+    // Escales clôturées NON facturées (bon de sortie, PAS de facture)
+    public List<Escale> getClotureesNonFacturees(Date debut, Date fin) throws SQLException {
+        List<Escale> list = new ArrayList<>();
+        String sql = "SELECT e.* FROM Escale e " +
+                "JOIN bonpilotage b ON b.numeroEscale = e.numeroEscale AND b.codeTypeMvt = 'SORTIE' " +
+                "LEFT JOIN facture f ON f.numero_escale = e.numeroEscale " +
+                "WHERE f.id IS NULL AND e.debutEscale BETWEEN ? AND ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDate(1, debut);
+            stmt.setDate(2, fin);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapEscale(rs));
+                }
+            }
+        }
+        return list;
+    }
+
+    // Escales NON clôturées (PAS de bon de sortie)
+    public List<Escale> getNonCloturees(Date debut, Date fin) throws SQLException {
+        List<Escale> list = new ArrayList<>();
+        String sql = "SELECT * FROM Escale e " +
+                     "WHERE NOT EXISTS (SELECT 1 FROM bonpilotage b WHERE b.numeroEscale = e.numeroEscale AND b.codeTypeMvt = 'SORTIE') " +
+                     "AND e.debutEscale BETWEEN ? AND ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDate(1, debut);
+            stmt.setDate(2, fin);
+            try (ResultSet rs = stmt.executeQuery()) {
+                while (rs.next()) {
+                    list.add(mapEscale(rs));
+                }
+            }
+        }
+        return list;
+    }
+
+    // ---------------------------------------------------------------------
+
     // Utilitaire de mapping pour éviter la duplication de code
     private Escale mapEscale(ResultSet rs) throws SQLException {
         Escale escale = new Escale();
@@ -146,14 +207,30 @@ public class EscaleDAO implements IEscaleDAO {
         escale.setTerminee(rs.getBoolean("terminee"));
         escale.setFacturee(rs.getBoolean("facturee"));
         String numeroNavire = rs.getString("numeroNavire");
-//        System.out.println("DEBUG EscaleDAO : numeroNavire=[" + numeroNavire + "]");
         Navire navire = navireDAO.getNavireParNumero(numeroNavire);
-//        System.out.println("DEBUG EscaleDAO : navire trouvé = " + navire);
         escale.setMyNavire(navire);
         if (navire != null) {
             escale.setConsignataire(navire.getConsignataire());
         }
         return escale;
+    }
+
+    // Pour l'exemple, récupération de la facture liée à une escale (si besoin)
+    private Facture getFactureByNumeroEscale(String numeroEscale, Connection conn) throws SQLException {
+        String sql = "SELECT * FROM facture WHERE numero_escale = ?";
+        try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, numeroEscale);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    Facture facture = new Facture();
+                    facture.setId(rs.getInt("id"));
+                    facture.setNumeroFacture(rs.getString("numero_facture"));
+                    // ... compléter selon ton modèle Facture ...
+                    return facture;
+                }
+            }
+        }
+        return null;
     }
 
     public List<Escale> getEscalesSansBonSortie() throws Exception {
@@ -198,4 +275,65 @@ public class EscaleDAO implements IEscaleDAO {
         }
         return escales;
     }
-  }
+	
+	//Escales terminées = celles qui ont un bon de sortie
+	public List<Escale> getEscalesTerminees() throws SQLException {
+	 List<Escale> liste = new ArrayList<>();
+	 String sql = "SELECT * FROM Escale e WHERE EXISTS (SELECT 1 FROM bonpilotage b WHERE b.numeroEscale = e.numeroEscale AND b.codeTypeMvt = 'SORTIE')";
+	 try (Connection conn = DatabaseConnection.getConnection();
+	      PreparedStatement stmt = conn.prepareStatement(sql);
+	      ResultSet rs = stmt.executeQuery()) {
+	     while (rs.next()) {
+	         liste.add(mapEscale(rs));
+	     }
+	 }
+	 return liste;
+	}
+	
+	// Escales prévues
+	public List<Escale> getEscalesPrevues() throws SQLException {
+	    List<Escale> liste = new ArrayList<>();
+	    String sql = "SELECT * FROM Escale WHERE debutEscale > CURRENT_DATE";
+	    try (Connection conn = DatabaseConnection.getConnection();
+	         PreparedStatement stmt = conn.prepareStatement(sql);
+	         ResultSet rs = stmt.executeQuery()) {
+	        while (rs.next()) {
+	            liste.add(mapEscale(rs));
+	        }
+	    }
+	    return liste;
+	}
+
+	// Escales en cours
+	public List<Escale> getEscalesEnCours() throws SQLException {
+	    List<Escale> liste = new ArrayList<>();
+	    String sql = "SELECT * FROM Escale WHERE debutEscale <= CURRENT_DATE AND finEscale >= CURRENT_DATE " +
+	                 "AND NOT EXISTS (SELECT 1 FROM bonpilotage b WHERE b.numeroEscale = Escale.numeroEscale AND b.codeTypeMvt = 'SORTIE')";
+	    try (Connection conn = DatabaseConnection.getConnection();
+	         PreparedStatement stmt = conn.prepareStatement(sql);
+	         ResultSet rs = stmt.executeQuery()) {
+	        while (rs.next()) {
+	            liste.add(mapEscale(rs));
+	        }
+	    }
+	    return liste;
+	}
+	
+	// Retourner les escales dont le début ou la fin est dans la période
+	public List<Escale> getByPeriode(java.sql.Date debut, java.sql.Date fin) throws SQLException {
+	    List<Escale> escales = new ArrayList<>();
+	    String sql = "SELECT * FROM Escale WHERE (debutEscale BETWEEN ? AND ?) OR (finEscale BETWEEN ? AND ?)";
+	    try (Connection conn = DatabaseConnection.getConnection();
+	         PreparedStatement stmt = conn.prepareStatement(sql)) {
+	        stmt.setDate(1, debut);
+	        stmt.setDate(2, fin);
+	        stmt.setDate(3, debut);
+	        stmt.setDate(4, fin);
+	        ResultSet rs = stmt.executeQuery();
+	        while (rs.next()) {
+	            escales.add(mapEscale(rs));
+	        }
+	    }
+	    return escales;
+	}
+}

@@ -31,15 +31,18 @@
         </select>
 
         <label>Type de mouvement :</label>
-        <select name="codeTypeMvt" required>
-            <option value="">-- Choisir le type --</option>
-            <c:forEach var="type" items="${typesMouvement}">
-                <option value="${type.codeTypeMvt}"
-                    <c:if test="${not empty bon.typeMouvement && bon.typeMouvement.codeTypeMvt == type.codeTypeMvt}">selected</c:if>>
-                    ${type.libelleTypeMvt}
-                </option>
-            </c:forEach>
-        </select>
+		<select name="codeTypeMvt" required>
+		    <option value="">-- Choisir le type --</option>
+		    <option value="Entree au port"
+		        <c:if test="${not empty bon.codeTypeMvt && bon.codeTypeMvt == 'Entree au port'}">selected</c:if>
+		    >Entrée au port</option>
+		    <option value="Mouvement"
+		        <c:if test="${not empty bon.codeTypeMvt && bon.codeTypeMvt == 'Mouvement'}">selected</c:if>
+		    >Mouvement</option>
+		    <option value="Sortie du port"
+		        <c:if test="${not empty bon.codeTypeMvt && bon.codeTypeMvt == 'Sortie du port'}">selected</c:if>
+		    >Sortie du port</option>
+		</select>
 
         <label>Date début du bon :</label>
         <input type="date" name="dateDeBon" value="${not empty bon.dateDeBon ? bon.dateDeBon : ''}" required />

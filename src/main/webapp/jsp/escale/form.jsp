@@ -45,13 +45,15 @@
             value="${not empty escale.prixUnitaire ? escale.prixUnitaire : ''}" required/>
 
         <label>Date début :</label>
-        <input type="date" name="debutEscale" id="debutEscale"
-            value="${not empty escale.debutEscale ? escale.debutEscale : ''}" required/>
+		 <input type="date" name="debutEscale" id="debutEscale"
+		    value="${not empty escale.debutEscale ? escale.debutEscale : ''}" 
+		    required min="<%= java.time.LocalDate.now() %>"/>
 
         <label>Date fin :</label>
-        <input type="date" name="finEscale" id="finEscale"
-            value="${not empty escale.finEscale ? escale.finEscale : ''}" required/>
-
+		<input type="date" name="finEscale" id="finEscale"
+		    value="${not empty escale.finEscale ? escale.finEscale : ''}" 
+		    required min="<%= java.time.LocalDate.now() %>"/>
+    
         <label>Prix séjour (calculé) :</label>
         <input type="number" step="0.01" name="prixSejour" id="prixSejour"
             value="${not empty escale.prixSejour ? escale.prixSejour : ''}" readonly required/>
@@ -93,6 +95,14 @@ document.getElementById('debutEscale').addEventListener('change', calculerPrixSe
 document.getElementById('finEscale').addEventListener('change', calculerPrixSejour);
 
 window.onload = calculerPrixSejour;
+
+document.addEventListener("DOMContentLoaded", function() {
+    // Met la date du jour au format yyyy-mm-dd
+    var today = new Date().toISOString().split('T')[0];
+    document.getElementById("debutEscale").setAttribute("min", today);
+    document.getElementById("finEscale").setAttribute("min", today);
+});
+
 </script>
 
 <jsp:include page="/includes/footer.jsp"/>

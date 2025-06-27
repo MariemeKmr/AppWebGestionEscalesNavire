@@ -1,9 +1,11 @@
 package com.gestionescale.dao.implementation;
 
 import com.gestionescale.model.Facture;
+import com.gestionescale.model.RecetteParPeriode;
 import com.gestionescale.util.DatabaseConnection;
 
 import java.sql.*;
+import java.sql.Date;
 import java.util.*;
 
 public class FactureDAO {
@@ -140,5 +142,94 @@ public class FactureDAO {
             f.setAgentNom(rs.getString("agent_nom"));
         } catch (SQLException ignore) {}
         return f;
+    }
+
+    // Chiffre d'affaires sur une période
+    public double getChiffreAffaires(java.util.Date debut, java.util.Date fin) throws Exception {
+        String sql = "SELECT SUM(montant_total) FROM facture WHERE date_generation BETWEEN ? AND ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setTimestamp(1, new java.sql.Timestamp(debut.getTime()));
+            stmt.setTimestamp(2, new java.sql.Timestamp(fin.getTime()));
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return rs.getDouble(1);
+        }
+        return 0;
+    }
+
+    // Nombre de factures sur une période
+    public int getNbFactures(java.util.Date debut, java.util.Date fin) throws Exception {
+        String sql = "SELECT COUNT(*) FROM facture WHERE date_generation BETWEEN ? AND ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setTimestamp(1, new java.sql.Timestamp(debut.getTime()));
+            stmt.setTimestamp(2, new java.sql.Timestamp(fin.getTime()));
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return rs.getInt(1);
+        }
+        return 0;
+    }
+
+    public List<RecetteParPeriode> getRecettesParAn(Date debut, Date fin) throws Exception {
+        List<RecetteParPeriode> list = new ArrayList<>();
+        String sql = "SELECT YEAR(date_generation) AS annee, SUM(montant_total) AS montant " +
+                     "FROM facture WHERE date_generation BETWEEN ? AND ? GROUP BY YEAR(date_generation) ORDER BY annee";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setDate(1, new java.sql.Date(debut.getTime()));
+            ps.setDate(2, new java.sql.Date(fin.getTime()));
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                RecetteParPeriode r = new RecetteParPeriode();
+                r.setAnnee(rs.getInt("annee"));
+                r.setMontant(rs.getDouble("montant"));
+                list.add(r);
+            }
+        }
+        return list;
+    }
+
+    public List<RecetteParPeriode> getRecettesParMois(Date debut, Date fin) throws Exception {
+        List<RecetteParPeriode> list = new ArrayList<>();
+        String sql = "SELECT YEAR(date_generation) AS annee, MONTH(date_generation) AS mois, SUM(montant_total) AS montant " +
+                     "FROM facture WHERE date_generation BETWEEN ? AND ? GROUP BY YEAR(date_generation), MONTH(date_generation) ORDER BY annee, mois";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setDate(1, new java.sql.Date(debut.getTime()));
+            ps.setDate(2, new java.sql.Date(fin.getTime()));
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                RecetteParPeriode r = new RecetteParPeriode();
+                r.setAnnee(rs.getInt("annee"));
+                r.setMois(rs.getInt("mois"));
+                r.setMontant(rs.getDouble("montant"));
+                list.add(r);
+            }
+        }
+        return list;
+    }
+
+    public List<RecetteParPeriode> getRecettesParJour(Date debut, Date fin) throws Exception {
+        List<RecetteParPeriode> list = new ArrayList<>();
+        String sql = "SELECT DATE(date_generation) AS jour, SUM(montant_total) AS montant " +
+                     "FROM facture WHERE date_generation BETWEEN ? AND ? GROUP BY DATE(date_generation) ORDER BY jour";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setDate(1, new java.sql.Date(debut.getTime()));
+            ps.setDate(2, new java.sql.Date(fin.getTime()));
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                RecetteParPeriode r = new RecetteParPeriode();
+                r.setDate(rs.getDate("jour"));
+                r.setMontant(rs.getDouble("montant"));
+                list.add(r);
+            }
+        }
+        return list;
+    }
+
+
+    public double getCAParPeriode(java.util.Date debut, java.util.Date fin) throws Exception {
+        return getChiffreAffaires(debut, fin);
     }
 }

@@ -22,7 +22,16 @@
         </tr>
         <tr>
             <th>Type de mouvement</th>
-            <td>${bon.typeMouvement.libelleTypeMvt}</td>
+			<td>
+			    <c:choose>
+			        <c:when test="${not empty bon.typeMouvement}">
+			            ${bon.typeMouvement.libelleTypeMvt}
+			        </c:when>
+			        <c:otherwise>
+			            <span class="text-danger"><em>Non renseigné</em></span>
+			        </c:otherwise>
+			    </c:choose>
+			</td>
         </tr>
         <tr>
             <th>Date début</th>

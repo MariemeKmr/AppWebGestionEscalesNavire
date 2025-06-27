@@ -12,8 +12,14 @@ import java.util.List;
 public class HistoriqueServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String recherche = req.getParameter("recherche");
+        List<Historique> historiques;
         try {
-            List<Historique> historiques = HistoriqueDAO.getAll();
+            if (recherche != null && !recherche.trim().isEmpty()) {
+                historiques = new HistoriqueDAO().rechercherParMotCle(recherche.trim());
+            } else {
+                historiques = new HistoriqueDAO().lister();
+            }
             req.setAttribute("historiques", historiques);
         } catch (Exception e) {
             req.setAttribute("error", "Erreur lors du chargement de l'historique : " + e.getMessage());

@@ -263,4 +263,38 @@ public class NavireDAO implements INavireDAO {
         }
         return navires;
     }
+ // Navires EN escale sur la période : présents dans une escale dont la période inclut au moins une journée de l’intervalle
+    public List<Navire> getEnEscale(java.sql.Date debut, java.sql.Date fin) throws SQLException {
+        List<Navire> navires = new ArrayList<>();
+        String sql = "SELECT DISTINCT n.* FROM navire n " +
+                     "JOIN escale e ON n.numeroNavire = e.numeroNavire " +
+                     "WHERE (e.debutEscale <= ? AND e.finEscale >= ?)";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDate(1, fin);
+            stmt.setDate(2, debut);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                navires.add(getNavireParNumero(rs.getString("numeroNavire")));
+            }
+        }
+        return navires;
+    }
+
+    // Navires HORS escale sur la période : pas présents dans une escale sur la période
+    public List<Navire> getHorsEscale(java.sql.Date debut, java.sql.Date fin) throws SQLException {
+        List<Navire> navires = new ArrayList<>();
+        String sql = "SELECT * FROM navire n WHERE n.numeroNavire NOT IN (" +
+                     "SELECT e.numeroNavire FROM escale e WHERE (e.debutEscale <= ? AND e.finEscale >= ?))";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDate(1, fin);
+            stmt.setDate(2, debut);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                navires.add(getNavireParNumero(rs.getString("numeroNavire")));
+            }
+        }
+        return navires;
+    }
 }

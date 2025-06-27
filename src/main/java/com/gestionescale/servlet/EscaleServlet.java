@@ -61,8 +61,19 @@ public class EscaleServlet extends HttpServlet {
     private void listEscales(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         try {
-            List<Escale> escales = escaleDAO.getToutesLesEscales();
-            request.setAttribute("escales", escales);
+        	String filtre = request.getParameter("filtre"); // "prevues", "enCours", "terminees", ou null
+        	List<Escale> escales;
+        	if ("terminees".equals(filtre)) {
+        	    escales = escaleDAO.getEscalesTerminees();
+        	} else if ("enCours".equals(filtre)) {
+        	    escales = escaleDAO.getEscalesEnCours();
+        	} else if ("prevues".equals(filtre)) {
+        	    escales = escaleDAO.getEscalesPrevues();
+        	} else {
+        	    escales = escaleDAO.getToutesLesEscales();
+        	}
+        	request.setAttribute("escales", escales);
+            request.setAttribute("filtre", filtre);
             request.getRequestDispatcher("/jsp/escale/list.jsp").forward(request, response);
         } catch (SQLException e) {
             throw new ServletException("Erreur lors de la récupération des escales", e);
@@ -121,6 +132,14 @@ public class EscaleServlet extends HttpServlet {
             java.sql.Date debutDate = java.sql.Date.valueOf(debutEscale);
             java.sql.Date finDate = java.sql.Date.valueOf(finEscale);
 
+            // Vérification : la date de début ne doit pas être antérieure à aujourd'hui
+            java.sql.Date today = java.sql.Date.valueOf(java.time.LocalDate.now());
+            if (debutDate.before(today)) {
+                request.setAttribute("error", "La date de début ne peut pas être antérieure à aujourd'hui.");
+                showNewForm(request, response);
+                return;
+            }
+
             String numeroEscale = genererNumeroEscale(debutDate, escaleDAO);
 
             Navire navire = navireDAO.getNavireParNumero(numeroNavire);
@@ -134,14 +153,7 @@ public class EscaleServlet extends HttpServlet {
             double prixUnitaire = Double.parseDouble(prixUnitaireStr);
             long nbJours = ChronoUnit.DAYS.between(debutDate.toLocalDate(), finDate.toLocalDate()) + 1;
             double prixSejour = prixUnitaire * nbJours;
-//
-//            System.out.println("numeroNavire: " + request.getParameter("numeroNavire"));
-//            System.out.println("debutEscale: " + request.getParameter("debutEscale"));
-//            System.out.println("finEscale: " + request.getParameter("finEscale"));
-//            System.out.println("prixUnitaire: " + request.getParameter("prixUnitaire"));
-//            System.out.println("zone: " + request.getParameter("zone"));
-//            System.out.println("prixSejour: " + request.getParameter("prixSejour"));
-            
+
             Escale escale = new Escale();
             escale.setNumeroEscale(numeroEscale);
             escale.setMyNavire(navire);
