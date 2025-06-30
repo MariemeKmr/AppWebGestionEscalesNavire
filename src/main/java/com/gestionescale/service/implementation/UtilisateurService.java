@@ -39,4 +39,12 @@ public class UtilisateurService implements IUtilisateurService {
     public void deleteUtilisateur(int id) {
         utilisateurDAO.supprimerUtilisateur(id);
     }
+    
+    public void updateEmailEtTelephone(int id, String email, String telephone) {
+        utilisateurDAO.modifierEmailEtTelephone(id, email, telephone);
+    }
+
+    public void updateMotDePasse(int id, String nouveauMotDePasse) {
+        utilisateurDAO.modifierMotDePasse(id, nouveauMotDePasse);
+    }
 }

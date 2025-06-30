@@ -11,6 +11,7 @@ import java.util.*;
 import com.gestionescale.dao.implementation.EscaleDAO;
 import com.gestionescale.dao.implementation.FactureDAO;
 import com.gestionescale.dao.implementation.NavireDAO;
+import com.gestionescale.dao.implementation.ConsignataireDAO;
 import com.gestionescale.model.Escale;
 import com.gestionescale.model.Navire;
 import com.gestionescale.model.RecetteParPeriode;
@@ -20,6 +21,7 @@ public class RapportServlet extends HttpServlet {
     private EscaleDAO escaleDAO = new EscaleDAO();
     private NavireDAO navireDAO = new NavireDAO();
     private FactureDAO factureDAO = new FactureDAO();
+    private ConsignataireDAO consignataireDAO = new ConsignataireDAO();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
@@ -49,13 +51,8 @@ public class RapportServlet extends HttpServlet {
                 escalesParNavire.put(navire, escalesParNavire.getOrDefault(navire, 0) + 1);
             }
 
-            Map<String, Integer> naviresParConsignataire = new LinkedHashMap<>();
-            for (Escale escale : escales) {
-                String cons = (escale.getConsignataire() != null && escale.getConsignataire().getRaisonSociale() != null)
-                        ? escale.getConsignataire().getRaisonSociale().trim()
-                        : "INCONNU";
-                naviresParConsignataire.put(cons, naviresParConsignataire.getOrDefault(cons, 0) + 1);
-            }
+            // Nouvelle version : nombre de navires par consignataire
+            Map<String, Integer> naviresParConsignataire = consignataireDAO.getNaviresParConsignataire();
 
             // Facturation
             List<Escale> escalesClotureesFacturees = escaleDAO.getClotureesFacturees(sqlDebut, sqlFin);

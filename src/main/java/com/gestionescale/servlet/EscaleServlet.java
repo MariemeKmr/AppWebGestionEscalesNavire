@@ -149,7 +149,6 @@ public class EscaleServlet extends HttpServlet {
                 showNewForm(request, response);
                 return;
             }
-
             double prixUnitaire = Double.parseDouble(prixUnitaireStr);
             long nbJours = ChronoUnit.DAYS.between(debutDate.toLocalDate(), finDate.toLocalDate()) + 1;
             double prixSejour = prixUnitaire * nbJours;

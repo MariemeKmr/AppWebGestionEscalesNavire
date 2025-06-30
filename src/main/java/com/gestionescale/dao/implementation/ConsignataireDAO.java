@@ -6,7 +6,9 @@ import com.gestionescale.util.DatabaseConnection;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ConsignataireDAO implements IConsignataireDAO {
 
@@ -104,4 +106,21 @@ public class ConsignataireDAO implements IConsignataireDAO {
         }
         return id;
     }
+
+	public Map<String, Integer> getNaviresParConsignataire() throws SQLException {
+	    Map<String, Integer> map = new LinkedHashMap<>();
+	    String sql = "SELECT c.raisonSociale, COUNT(n.numeroNavire) AS nb_navires " +
+	                 "FROM consignataire c " +
+	                 "LEFT JOIN navire n ON c.idConsignataire = n.idConsignataire " +
+	                 "GROUP BY c.idConsignataire, c.raisonSociale " +
+	                 "ORDER BY nb_navires DESC";
+	    try (Connection conn = DatabaseConnection.getConnection();
+	         PreparedStatement stmt = conn.prepareStatement(sql);
+	         ResultSet rs = stmt.executeQuery()) {
+	        while (rs.next()) {
+	            map.put(rs.getString("raisonSociale"), rs.getInt("nb_navires"));
+	        }
+	    }
+	    return map;
+	}
 }

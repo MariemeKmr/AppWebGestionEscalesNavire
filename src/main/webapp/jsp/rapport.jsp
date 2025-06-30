@@ -33,36 +33,7 @@
         <div class="chart-fix-container">
             <canvas id="escalesBarChart" width="400" height="400"></canvas>
         </div>
-        <table class="report-table">
-            <thead>
-                <tr>
-                    <th>Numéro Escale</th>
-                    <th>Navire</th>
-                    <th>Date arrivée</th>
-                    <th>Date départ</th>
-                </tr>
-            </thead>
-            <tbody>
-                <c:forEach var="escale" items="${escales}">
-                    <tr>
-                        <td>${escale.numeroEscale}</td>
-                        <td>
-                            <c:choose>
-                                <c:when test="${escale.myNavire != null}">
-                                    ${escale.myNavire.nomNavire}
-                                </c:when>
-                                <c:otherwise>
-                                    INCONNU
-                                </c:otherwise>
-                            </c:choose>
-                        </td>
-                        <td>${escale.debutEscale}</td>
-                        <td>${escale.finEscale}</td>
-                    </tr>
-                </c:forEach>
-            </tbody>
-        </table>
-      </div>
+       </div>
 
       <!-- Bloc Navires en escale / hors escale -->
       <div class="double-report-col">
@@ -70,27 +41,6 @@
         <div class="chart-fix-container">
             <canvas id="naviresPieChart" width="400" height="400"></canvas>
         </div>
-        <table class="navire-status-table">
-            <thead>
-                <tr>
-                    <th>Navires en escale</th>
-                    <th>Navires hors escale</th>
-                </tr>
-            </thead>
-            <tbody>
-                <c:set var="maxRows" value="${fn:length(naviresEnEscale) > fn:length(naviresHorsEscale) ? fn:length(naviresEnEscale) : fn:length(naviresHorsEscale)}"/>
-                <c:forEach var="i" begin="0" end="${maxRows-1}">
-                    <tr>
-                        <td>
-                            <c:if test="${i < fn:length(naviresEnEscale)}">${naviresEnEscale[i].nomNavire}</c:if>
-                        </td>
-                        <td>
-                            <c:if test="${i < fn:length(naviresHorsEscale)}">${naviresHorsEscale[i].nomNavire}</c:if>
-                        </td>
-                    </tr>
-                </c:forEach>
-            </tbody>
-        </table>
       </div>
     </div>
 

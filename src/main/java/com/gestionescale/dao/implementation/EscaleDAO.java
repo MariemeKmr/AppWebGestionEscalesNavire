@@ -81,14 +81,53 @@ public class EscaleDAO implements IEscaleDAO {
         }
         return liste;
     }
-
-    @Override
-    public void supprimerEscale(String numeroEscale) throws SQLException {
-        String sql = "DELETE FROM Escale WHERE numeroEscale = ?";
+    
+ // Escales ayant un bon d'entrée et PAS de bon de sortie
+    public List<Escale> getEscalesAvecBonEntreeSansBonSortie() throws SQLException {
+        List<Escale> liste = new ArrayList<>();
+        String sql = "SELECT * FROM escale e " +
+                "WHERE EXISTS (SELECT 1 FROM bonpilotage b WHERE b.numeroEscale = e.numeroEscale AND b.codeTypeMvt = 'ENTREE') " +
+                "AND NOT EXISTS (SELECT 1 FROM bonpilotage b2 WHERE b2.numeroEscale = e.numeroEscale AND b2.codeTypeMvt = 'SORTIE')";
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setString(1, numeroEscale);
-            stmt.executeUpdate();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Escale escale = mapEscale(rs);
+                liste.add(escale);
+            }
+        }
+        return liste;
+    }
+
+    public void supprimerEscale(String numeroEscale) throws SQLException {
+        Connection conn = null;
+        PreparedStatement checkBonPilotage = null;
+        PreparedStatement deleteEscale = null;
+        ResultSet rs = null;
+        try {
+            conn = DatabaseConnection.getConnection();
+
+            // Vérifie s'il existe AU MOINS un bonpilotage pour cette escale
+            String sqlCheck = "SELECT COUNT(*) FROM bonpilotage WHERE numeroEscale = ?";
+            checkBonPilotage = conn.prepareStatement(sqlCheck);
+            checkBonPilotage.setString(1, numeroEscale);
+            rs = checkBonPilotage.executeQuery();
+
+            if (rs.next() && rs.getInt(1) > 0) {
+                throw new SQLException("Suppression impossible : cette escale a déjà un bon d'entrée ou de sortie.");
+            }
+
+            // On peut supprimer car il n'y a pas de bonpilotage
+            String sqlEscale = "DELETE FROM Escale WHERE numeroEscale = ?";
+            deleteEscale = conn.prepareStatement(sqlEscale);
+            deleteEscale.setString(1, numeroEscale);
+            deleteEscale.executeUpdate();
+
+        } finally {
+            if (rs != null) rs.close();
+            if (checkBonPilotage != null) checkBonPilotage.close();
+            if (deleteEscale != null) deleteEscale.close();
+            if (conn != null) conn.close();
         }
     }
 
@@ -233,10 +272,10 @@ public class EscaleDAO implements IEscaleDAO {
         return null;
     }
 
-    public List<Escale> getEscalesSansBonSortie() throws Exception {
+    public List<Escale> getEscalesSansBonSortie() throws SQLException {
         List<Escale> liste = new ArrayList<>();
         String sql = "SELECT * FROM escale e WHERE NOT EXISTS (" +
-                     "SELECT 1 FROM bonpilotage b WHERE b.numeroEscale = e.numeroEscale AND b.codeTypeMvt = 'SORTIE')";
+                "SELECT 1 FROM bonpilotage b WHERE b.numeroEscale = e.numeroEscale AND b.codeTypeMvt = 'SORTIE')";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {

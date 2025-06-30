@@ -33,7 +33,7 @@
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                             <li>
-                                <a class="dropdown-item" href="#">
+                                <a class="dropdown-item" href="${pageContext.request.contextPath}/jsp/profile.jsp">
                                     <i class="fas fa-user nav-icon"></i> Profil
                                 </a>
                             </li>

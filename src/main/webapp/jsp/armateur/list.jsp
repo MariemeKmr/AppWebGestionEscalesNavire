@@ -16,9 +16,6 @@
 
     <div class="content-container">
         <h2>Liste des armateurs</h2>
-        <a href="${pageContext.request.contextPath}/armateur?action=new" class="btn-new mb-2">
-            <i class="fas fa-plus"></i> Nouvel armateur
-        </a>
         <table>
             <thead>
                 <tr>

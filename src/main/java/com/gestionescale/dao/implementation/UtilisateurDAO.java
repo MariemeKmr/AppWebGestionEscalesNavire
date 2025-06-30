@@ -147,4 +147,31 @@ public class UtilisateurDAO implements IUtilisateurDAO {
 
         return utilisateur;
     }
+    
+ // Met à jour email et téléphone d'un utilisateur (sans toucher au mot de passe)
+    public void modifierEmailEtTelephone(int id, String email, String telephone) {
+        String sql = "UPDATE utilisateur SET email = ?, telephone = ? WHERE id = ?";
+        try (Connection connexion = DatabaseConnection.getConnection();
+             PreparedStatement statement = connexion.prepareStatement(sql)) {
+            statement.setString(1, email);
+            statement.setString(2, telephone);
+            statement.setInt(3, id);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // Met à jour le mot de passe d'un utilisateur
+    public void modifierMotDePasse(int id, String nouveauMotDePasse) {
+        String sql = "UPDATE utilisateur SET mot_de_passe = ? WHERE id = ?";
+        try (Connection connexion = DatabaseConnection.getConnection();
+             PreparedStatement statement = connexion.prepareStatement(sql)) {
+            statement.setString(1, nouveauMotDePasse);
+            statement.setInt(2, id);
+            statement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
 }

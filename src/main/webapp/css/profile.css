@@ -1,0 +1,70 @@
+.profile-page {
+    background: #f5f8fa;
+    min-height: 100vh;
+}
+
+/* Carte de profil spécifique */
+.profile-page .profile-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 8px 24px rgba(60,72,88,0.07), 0 1.5px 3px rgba(60,72,88,0.04);
+    padding: 32px 28px;
+    margin-top: 32px;
+    margin-bottom: 32px;
+}
+
+.profile-page h2, 
+.profile-page h4 {
+    color: #1a4067;
+}
+
+.profile-page .form-label {
+    font-weight: 500;
+    color: #1a4067;
+}
+
+.profile-page input[readonly] {
+    background-color: #e9ecef;
+    color: #495057;
+    cursor: not-allowed;
+}
+
+.profile-page input[type="email"], 
+.profile-page input[type="text"], 
+.profile-page input[type="password"] {
+    border-radius: 6px;
+    border: 1px solid #c3d0e6;
+    transition: border-color 0.2s;
+}
+.profile-page input[type="email"]:focus,
+.profile-page input[type="text"]:focus,
+.profile-page input[type="password"]:focus {
+    border-color: #1976d2;
+    box-shadow: 0 0 0 0.2rem rgba(25, 118, 210, 0.2);
+}
+
+.profile-page .btn-success, 
+.profile-page .btn-primary {
+    width: 100%;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.profile-page hr {
+    margin: 2.5rem 0;
+    border-top: 2px solid #c3d0e6;
+}
+
+.profile-page .alert-info {
+    background: #e3f2fd;
+    color: #1976d2;
+    border: none;
+    border-radius: 6px;
+}
+
+@media (max-width: 768px) {
+    .profile-page .profile-card {
+        padding: 18px 8px;
+    }
+}

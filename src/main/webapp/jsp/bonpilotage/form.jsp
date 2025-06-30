@@ -31,16 +31,17 @@
         </select>
 
         <label>Type de mouvement :</label>
+
 		<select name="codeTypeMvt" required>
 		    <option value="">-- Choisir le type --</option>
-		    <option value="Entree au port"
-		        <c:if test="${not empty bon.codeTypeMvt && bon.codeTypeMvt == 'Entree au port'}">selected</c:if>
+		    <option value="ENTREE"
+		        <c:if test="${not empty bon.typeMouvement && bon.typeMouvement.codeTypeMvt == 'ENTREE'}">selected</c:if>
 		    >Entrée au port</option>
 		    <option value="Mouvement"
-		        <c:if test="${not empty bon.codeTypeMvt && bon.codeTypeMvt == 'Mouvement'}">selected</c:if>
+		        <c:if test="${not empty bon.typeMouvement && bon.typeMouvement.codeTypeMvt == 'Mouvement'}">selected</c:if>
 		    >Mouvement</option>
-		    <option value="Sortie du port"
-		        <c:if test="${not empty bon.codeTypeMvt && bon.codeTypeMvt == 'Sortie du port'}">selected</c:if>
+		    <option value="SORTIE"
+		        <c:if test="${not empty bon.typeMouvement && bon.typeMouvement.codeTypeMvt == 'SORTIE'}">selected</c:if>
 		    >Sortie du port</option>
 		</select>
 

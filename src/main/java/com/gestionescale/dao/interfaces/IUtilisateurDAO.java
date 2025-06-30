@@ -10,4 +10,6 @@ public interface IUtilisateurDAO {
     void modifierUtilisateur(Utilisateur utilisateur);
     void supprimerUtilisateur(int id);
     Utilisateur trouverParEmailEtMotDePasse(String email, String motDePasse);
+	void modifierEmailEtTelephone(int id, String email, String telephone);
+	void modifierMotDePasse(int id, String nouveauMotDePasse);
 }

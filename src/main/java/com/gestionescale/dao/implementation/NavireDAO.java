@@ -246,6 +246,7 @@ public class NavireDAO implements INavireDAO {
         }
         return navires;
     }
+    
     public List<Navire> listerNaviresParArmateur(int idArmateur) throws SQLException {
         List<Navire> navires = new ArrayList<>();
         String sql = "SELECT * FROM navire WHERE idArmateur = ?";;
