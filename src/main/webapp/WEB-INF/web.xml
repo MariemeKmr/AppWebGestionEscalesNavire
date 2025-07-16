@@ -104,4 +104,12 @@
   <servlet-name>FactureServlet</servlet-name>
   <url-pattern>/facture/*</url-pattern>
 </servlet-mapping>
+<filter>
+    <filter-name>UserContextFilter</filter-name>
+    <filter-class>com.gestionescale.filter.UserContextFilter</filter-class>
+</filter>
+<filter-mapping>
+    <filter-name>UserContextFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
 </web-app>

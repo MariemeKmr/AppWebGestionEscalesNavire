@@ -16,7 +16,7 @@ public class BonPilotageDAO implements IBonPilotageDAO {
 
     @Override
     public void ajouterBonPilotage(BonPilotage bon) throws SQLException {
-        String sql = "INSERT INTO bonpilotage (montEscale, dateDebutBon, dateFinBon, posteQuai, codeTypeMvt, numeroEscale) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO bonpilotage (montEscale, dateDebutBon, dateFinBon, posteQuai, codeTypeMvt, numeroEscale, etat) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setDouble(1, bon.getMontEscale());
@@ -25,6 +25,7 @@ public class BonPilotageDAO implements IBonPilotageDAO {
             stmt.setString(4, bon.getPosteAQuai());
             stmt.setString(5, bon.getTypeMouvement().getCodeTypeMvt());
             stmt.setString(6, bon.getMonEscale().getNumeroEscale());
+            stmt.setString(7, bon.getEtat());
             stmt.executeUpdate();
         }
     }
@@ -73,7 +74,7 @@ public class BonPilotageDAO implements IBonPilotageDAO {
 
     @Override
     public void modifierBon(BonPilotage bon) throws SQLException {
-        String sql = "UPDATE bonpilotage SET montEscale=?, dateDebutBon=?, dateFinBon=?, posteQuai=?, codeTypeMvt=?, numeroEscale=? WHERE idMouvement=?";
+        String sql = "UPDATE bonpilotage SET montEscale=?, dateDebutBon=?, dateFinBon=?, posteQuai=?, codeTypeMvt=?, numeroEscale=?, etat=? WHERE idMouvement=?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setDouble(1, bon.getMontEscale());
@@ -82,7 +83,8 @@ public class BonPilotageDAO implements IBonPilotageDAO {
             stmt.setString(4, bon.getPosteAQuai());
             stmt.setString(5, bon.getTypeMouvement().getCodeTypeMvt());
             stmt.setString(6, bon.getMonEscale().getNumeroEscale());
-            stmt.setInt(7, bon.getIdMouvement());
+            stmt.setString(7, bon.getEtat());
+            stmt.setInt(8, bon.getIdMouvement());
             stmt.executeUpdate();
         }
     }
@@ -142,6 +144,15 @@ public class BonPilotageDAO implements IBonPilotageDAO {
         }
         return liste;
     }
+    
+    public void validerBon(int idMouvement) throws SQLException {
+        String sql = "UPDATE bonpilotage SET etat = 'Validé' WHERE idMouvement = ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setInt(1, idMouvement);
+            stmt.executeUpdate();
+        }
+    }
 
     /**
      * Récupère la liste des bons de pilotage associés à une escale donnée.
@@ -168,6 +179,7 @@ public class BonPilotageDAO implements IBonPilotageDAO {
         bon.setDateDeBon(rs.getDate("dateDebutBon"));
         bon.setDateFinBon(rs.getDate("dateFinBon"));
         bon.setPosteAQuai(rs.getString("posteQuai"));
+        bon.setEtat(rs.getString("etat"));
 
         Escale escale = new EscaleDAO().getEscaleParNumero(rs.getString("numeroEscale"));
         bon.setMonEscale(escale);
@@ -190,5 +202,18 @@ public class BonPilotageDAO implements IBonPilotageDAO {
             }
         }
         return false;
+    }
+
+    public List<BonPilotage> getBonsValidesPourFacturation() throws SQLException {
+        List<BonPilotage> liste = new ArrayList<>();
+        String sql = "SELECT * FROM bonpilotage WHERE etat = 'Validé'";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql);
+             ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                liste.add(mapResultSetToBonPilotage(rs));
+            }
+        }
+        return liste;
     }
 }

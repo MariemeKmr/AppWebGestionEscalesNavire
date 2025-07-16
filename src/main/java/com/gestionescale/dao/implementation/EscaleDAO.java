@@ -375,4 +375,40 @@ public class EscaleDAO implements IEscaleDAO {
 	    }
 	    return escales;
 	}
+	
+    /**
+     * Escales dont le debutEscale est entre deux dates (arrivées prévues)
+     */
+    public List<Escale> getEscalesArrivantEntre(Date debut, Date fin) throws SQLException {
+        List<Escale> liste = new ArrayList<>();
+        String sql = "SELECT * FROM Escale WHERE debutEscale BETWEEN ? AND ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDate(1, debut);
+            stmt.setDate(2, fin);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                liste.add(mapEscale(rs));
+            }
+        }
+        return liste;
+    }
+
+    /**
+     * Escales dont le finEscale est entre deux dates (navires partis)
+     */
+    public List<Escale> getEscalesPartiesEntre(Date debut, Date fin) throws SQLException {
+        List<Escale> liste = new ArrayList<>();
+        String sql = "SELECT * FROM Escale WHERE finEscale BETWEEN ? AND ?";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setDate(1, debut);
+            stmt.setDate(2, fin);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                liste.add(mapEscale(rs));
+            }
+        }
+        return liste;
+    }
 }

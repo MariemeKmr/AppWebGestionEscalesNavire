@@ -20,50 +20,47 @@
     <div class="notification-container">
         <h2><i class="fas fa-bell"></i> Notifications</h2>
 
-        <div class="notification-badge">
-            <span class="badge" id="notificationCount"><c:out value="${notifications.size()}"/></span>
-        </div>
-
-        <c:forEach var="notification" items="${notifications}" varStatus="status">
-            <div class="notification-card">
-                <div class="notification-icon">
-                    <c:choose>
-                        <c:when test="${notification.type == 'chargement'}">
-                            <i class="fas fa-box-open text-success"></i>
-                        </c:when>
-                        <c:when test="${notification.type == 'pilote'}">
-                            <i class="fas fa-user-shield text-info"></i>
-                        </c:when>
-                        <c:when test="${notification.type == 'sanitaire'}">
-                            <i class="fas fa-medkit text-warning"></i>
-                        </c:when>
-                        <c:when test="${notification.type == 'reservation'}">
-                            <i class="fas fa-calendar-check text-primary"></i>
-                        </c:when>
-                        <c:when test="${notification.type == 'meteo'}">
-                            <i class="fas fa-cloud-sun text-dark"></i>
-                        </c:when>
-                        <c:otherwise>
-                            <i class="fas fa-ship text-muted"></i>
-                        </c:otherwise>
-                    </c:choose>
-                </div>
-                <div class="notification-content">
-                    <div class="notification-title">${notification.title}</div>
-                    <div class="notification-description">${notification.description}</div>
-                    <div class="notification-time">
-                        <fmt:formatDate value="${notification.timestamp}" pattern="Il y a mm:ss" />
-                    </div>
-                </div>
-                <a href="#" class="mark-as-read">Marquer comme lu</a>
-            </div>
-        </c:forEach>
-
-        <c:if test="${empty notifications}">
-            <div class="alert alert-info">
-                <i class="fas fa-info-circle"></i> Aucune notification trouvée.
-            </div>
+        <h3>Navires attendus cette semaine</h3>
+        <c:if test="${empty escalesArrivees}">
+            <p>Aucun navire attendu cette semaine.</p>
         </c:if>
+        <ul>
+            <c:forEach var="escale" items="${escalesArrivees}">
+                <li>
+                    <strong>${escale.myNavire.nomNavire}</strong>
+                    — arrivée prévue le <fmt:formatDate value="${escale.debutEscale}" pattern="dd/MM/yyyy"/>
+                    (Escale n°${escale.numeroEscale})
+                </li>
+            </c:forEach>
+        </ul>
+
+        <h3>Navires partis cette semaine</h3>
+        <c:if test="${empty escalesParties}">
+            <p>Aucun navire n'a quitté le port cette semaine.</p>
+        </c:if>
+        <ul>
+            <c:forEach var="escale" items="${escalesParties}">
+                <li>
+                    <strong>${escale.myNavire.nomNavire}</strong>
+                    — départ le <fmt:formatDate value="${escale.finEscale}" pattern="dd/MM/yyyy"/>
+                    (Escale n°${escale.numeroEscale})
+                </li>
+            </c:forEach>
+        </ul>
+
+		<h3>Escales terminées à facturer</h3>
+		<c:if test="${empty escalesNonFacturees}">
+		    <p>Aucune escale terminée à facturer.</p>
+		</c:if>
+		<ul>
+		  <c:forEach var="escale" items="${escalesNonFacturees}">
+		    <li>
+		      <strong>${escale.myNavire.nomNavire}</strong>
+		      — terminée le <fmt:formatDate value="${escale.finEscale}" pattern="dd/MM/yyyy"/>
+		      (Escale n°${escale.numeroEscale}) <span class="badge bg-warning text-dark">À facturer</span>
+		    </li>
+		  </c:forEach>
+		</ul>
     </div>
 
     <jsp:include page="/includes/footer.jsp"/>

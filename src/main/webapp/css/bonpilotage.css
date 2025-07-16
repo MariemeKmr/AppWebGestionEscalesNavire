@@ -214,3 +214,144 @@ tbody tr:nth-of-type(odd) {
     color: #fff;
     border: 1px solid #2980b9;
 }
+
+.content-container .form-group {
+    margin-bottom: 18px;
+    display: flex;
+    flex-direction: column;
+}
+.content-container label {
+    font-weight: 500;
+    color: #2c3e50;
+    margin-bottom: 6px;
+}
+.content-container input[type="text"],
+.content-container input[type="number"],
+.content-container input[type="date"],
+.content-container select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1.5px solid #bfc9d1;
+    border-radius: 6px;
+    font-size: 15px;
+    background: #fafdff;
+    box-sizing: border-box;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+.content-container input[type="text"]:focus,
+.content-container input[type="number"]:focus,
+.content-container input[type="date"]:focus,
+.content-container select:focus {
+    border-color: #1765a0;
+    outline: none;
+    box-shadow: 0 0 0 2px #b8daf5;
+}
+.content-container input[readonly] {
+    background: #e9ecef;
+    color: #7a8b9c;
+    font-weight: bold;
+}
+.content-container .btn-primary, .content-container .btn-secondary {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-weight: 600;
+    border: none;
+    cursor: pointer;
+    margin: 3px;
+    font-size: 15px;
+    transition: background 0.2s, color 0.2s;
+    text-decoration: none;
+    display: inline-block;
+}
+.content-container .btn-primary {
+    background: #1765a0;
+    color: #fff;
+}
+.content-container .btn-primary:hover {
+    background: #12517a;
+}
+.content-container .btn-secondary {
+    background: #6c757d;
+    color: #fff;
+}
+.content-container .btn-secondary:hover {
+    background: #495057;
+}
+.content-container .form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 14px;
+}
+.content-container .alert {
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    font-size: 16px;
+    border: 1.5px solid #b8daf5;
+    background: #f8d7da;
+    color: #721c24;
+    border-color: #f5c6cb;
+}
+/* Toggle état */
+.content-container .toggle-btn-etat {
+    display: inline-flex;
+    align-items: center;
+    background: #f6f6f6;
+    border-radius: 2em;
+    border: 2px solid #bfc9d1;
+    padding: .4em 1.2em;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: border-color .2s, background .2s;
+    user-select: none;
+    outline: none;
+    margin-bottom: 1em;
+    margin-top: 2px;
+}
+.content-container .toggle-btn-etat.saisie {
+    border-color: #ffc107;
+    background: #fffbe6;
+    color: #b58900;
+}
+.content-container .toggle-btn-etat.valide {
+    border-color: #28a745;
+    background: #eafff4;
+    color: #106a4e;
+}
+.content-container .toggle-btn-etat:focus-visible {
+    box-shadow: 0 0 0 2px #1765a0;
+}
+.content-container .toggle-label-etat {
+    font-weight: bold;
+    margin-right: 0.5em;
+    letter-spacing: 0.02em;
+}
+
+.badge {
+    /* Efface le fond et le contour */
+    background: none !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0;
+    margin: 0 2px;
+    font-style: italic;
+    font-size: 1em;
+    font-weight: bold;
+    letter-spacing: 0.01em;
+    /* optionnel : pour éviter toute largeur minimale */
+    min-width: 0;
+    display: inline;
+}
+
+.badge-success {
+    color: #32CD32 !important; 
+}
+
+.badge-warning {
+    color: #FF6B6B !important; 
+}
+
+.badge-secondary {
+    color: #6c757d !important; /* gris */
+}

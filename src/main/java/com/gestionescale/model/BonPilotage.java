@@ -10,12 +10,13 @@ public class BonPilotage {
     private Date dateFinBon;
     private String posteaQuai;
     private TypeMouvement typeMouvement;
+    private String etat;
     
     // Constructeur sans paramètre
     public BonPilotage() {}
 
     // Constructeur avec tous les paramètres
-    public BonPilotage(int idMouvement, double montEscale, Escale monEscale, Date dateDeBon, Date dateFinBon, String posteaQuai, TypeMouvement typeMouvement) {
+    public BonPilotage(int idMouvement, double montEscale, Escale monEscale, Date dateDeBon, Date dateFinBon, String posteaQuai, TypeMouvement typeMouvement, String etat) {
         this.idMouvement = idMouvement;
         this.montEscale = montEscale;
         this.monEscale = monEscale;
@@ -23,6 +24,7 @@ public class BonPilotage {
         this.dateFinBon = dateFinBon;
         this.posteaQuai = posteaQuai;
         this.typeMouvement = typeMouvement;
+        this.etat = etat;
     }
 
     // Getters et Setters
@@ -74,5 +76,12 @@ public class BonPilotage {
     }
     public void setTypeMouvement(TypeMouvement typeMouvement) {
         this.typeMouvement = typeMouvement;
+    }
+    
+    public String getEtat() {
+        return etat;
+    }
+    public void setEtat(String etat) {
+        this.etat = etat;
     }
 }

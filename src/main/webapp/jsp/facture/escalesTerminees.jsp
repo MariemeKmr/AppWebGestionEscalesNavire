@@ -18,6 +18,9 @@
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>Escale(s) terminée(s) à facturer</h2>
     </div>
+    <c:if test="${not empty errorMessage}">
+	    <div class="alert alert-danger">${errorMessage}</div>
+	</c:if>
     <table>
         <thead>
             <tr>

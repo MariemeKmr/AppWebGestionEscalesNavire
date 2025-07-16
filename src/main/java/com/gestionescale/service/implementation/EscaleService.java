@@ -5,7 +5,9 @@ import com.gestionescale.dao.implementation.EscaleDAO;
 import com.gestionescale.model.Escale;
 import com.gestionescale.service.interfaces.IEscaleService;
 
+import java.sql.Date;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
 public class EscaleService implements IEscaleService {
@@ -55,6 +57,34 @@ public class EscaleService implements IEscaleService {
             escaleDAO.supprimerEscale(numeroEscale);
         } catch (SQLException e) {
             throw new RuntimeException("Erreur lors de la suppression de l’escale", e);
+        }
+    }
+    
+    /**
+     * Escales dont l'arrivée (debutEscale) est prévue dans les 7 prochains jours (y compris aujourd'hui)
+     */
+    public List<Escale> getEscalesArrivantCetteSemaine() {
+        try {
+            LocalDate today = LocalDate.now();
+            LocalDate dans7j = today.plusDays(7);
+            return ((EscaleDAO) escaleDAO).getEscalesArrivantEntre(Date.valueOf(today), Date.valueOf(dans7j));
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de la récupération des escales à venir", e);
+        }
+    }
+
+    /**
+     * Escales dont le navire a quitté le port cette semaine (finEscale entre lundi et dimanche de la semaine courante)
+     */
+    public List<Escale> getEscalesPartiesCetteSemaine() {
+        try {
+            LocalDate today = LocalDate.now();
+            // Commence lundi de cette semaine
+            LocalDate lundi = today.minusDays(today.getDayOfWeek().getValue() - 1);
+            LocalDate dimanche = lundi.plusDays(6);
+            return ((EscaleDAO) escaleDAO).getEscalesPartiesEntre(Date.valueOf(lundi), Date.valueOf(dimanche));
+        } catch (SQLException e) {
+            throw new RuntimeException("Erreur lors de la récupération des escales parties", e);
         }
     }
 }

@@ -1,0 +1,5 @@
+<aspectj>
+    <aspects>
+        <aspect name="com.gestionescale.aspect.HistoriqueAspect"/>
+    </aspects>
+</aspectj>

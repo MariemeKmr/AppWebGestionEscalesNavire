@@ -29,7 +29,8 @@ public class BonPilotageServlet extends HttpServlet {
                 req.setAttribute("bons", bons);
                 req.getRequestDispatcher("/jsp/bonpilotage/list.jsp").forward(req, resp);
             } else if (path.equals("/new")) {
-            	List<Escale> escalesEnCours = new EscaleDAO().getEscalesSansBonSortie();                List<TypeMouvement> allTypes = new TypeMouvementDAO().getTousLesTypesMouvement();
+                List<Escale> escalesEnCours = new EscaleDAO().getEscalesSansBonSortie();
+                List<TypeMouvement> allTypes = new TypeMouvementDAO().getTousLesTypesMouvement();
                 List<TypeMouvement> typesMouvement = new ArrayList<>();
                 for (TypeMouvement t : allTypes) {
                     String lib = t.getLibelleTypeMvt();
@@ -50,7 +51,8 @@ public class BonPilotageServlet extends HttpServlet {
             } else if (path.equals("/edit")) {
                 int id = Integer.parseInt(req.getParameter("id"));
                 BonPilotage bon = service.getBonPilotageParId(id);
-                List<Escale> escalesEnCours = new EscaleDAO().getEscalesSansBonSortie();                List<TypeMouvement> allTypes = new TypeMouvementDAO().getTousLesTypesMouvement();
+                List<Escale> escalesEnCours = new EscaleDAO().getEscalesSansBonSortie();
+                List<TypeMouvement> allTypes = new TypeMouvementDAO().getTousLesTypesMouvement();
                 List<TypeMouvement> typesMouvement = new ArrayList<>();
                 for (TypeMouvement t : allTypes) {
                     String lib = t.getLibelleTypeMvt();
@@ -78,6 +80,10 @@ public class BonPilotageServlet extends HttpServlet {
                 int id = Integer.parseInt(req.getParameter("id"));
                 service.supprimerBonPilotage(id);
                 resp.sendRedirect(req.getContextPath() + "/bonpilotage/list");
+            } else if (path.equals("/valider")) {
+                int id = Integer.parseInt(req.getParameter("id"));
+                service.validerBonPilotage(id);
+                resp.sendRedirect(req.getContextPath() + "/bonpilotage/list");
             } else {
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
@@ -102,7 +108,7 @@ public class BonPilotageServlet extends HttpServlet {
             if (path == null) path = "";
             if (path.equals("/insert")) {
                 BonPilotage bon = remplirBonDepuisRequest(req, false);
-
+                bon.setEtat("Saisie");
                 String libelleMvt = bon.getTypeMouvement().getLibelleTypeMvt();
                 String codeTypeMvt = bon.getTypeMouvement().getCodeTypeMvt();
                 String numeroEscale = bon.getMonEscale().getNumeroEscale();
@@ -125,7 +131,7 @@ public class BonPilotageServlet extends HttpServlet {
                     return;
                 }
 
-                // Vérification unicité pour Entree au port / Sortie du port
+                // Règle 3 : Impossible d'avoir plusieurs bons d'entrée ou de sortie
                 if ("Entree au port".equalsIgnoreCase(libelleMvt) || "Sortie du port".equalsIgnoreCase(libelleMvt)) {
                     boolean existe = service.existeBonDeCeTypePourEscale(numeroEscale, codeTypeMvt);
                     if (existe) {
@@ -139,6 +145,13 @@ public class BonPilotageServlet extends HttpServlet {
                 resp.sendRedirect(req.getContextPath() + "/bonpilotage/list");
             } else if (path.equals("/update")) {
                 BonPilotage bon = remplirBonDepuisRequest(req, true);
+                // CORRECTION IMPORTANTE : on récupère la valeur de l'état envoyée par le formulaire !
+                String etatParam = req.getParameter("etat");
+                if (etatParam == null || etatParam.trim().isEmpty()) {
+                    bon.setEtat("Saisie"); // Valeur par défaut si jamais le champ est manquant
+                } else {
+                    bon.setEtat(etatParam);
+                }
                 service.modifierBonPilotage(bon);
                 resp.sendRedirect(req.getContextPath() + "/bonpilotage/list");
             } else {
@@ -185,12 +198,15 @@ public class BonPilotageServlet extends HttpServlet {
         }
         bon.setMonEscale(escale);
 
+        // NE PAS GÉRER ETAT ICI (on le fait dans doPost pour insert/update)
+
         return bon;
     }
 
     private void forwardToFormWithLists(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
-        	List<Escale> escalesEnCours = new EscaleDAO().getEscalesSansBonSortie();            List<TypeMouvement> allTypes = new TypeMouvementDAO().getTousLesTypesMouvement();
+            List<Escale> escalesEnCours = new EscaleDAO().getEscalesSansBonSortie();
+            List<TypeMouvement> allTypes = new TypeMouvementDAO().getTousLesTypesMouvement();
             List<TypeMouvement> typesMouvement = new ArrayList<>();
             for (TypeMouvement t : allTypes) {
                 String lib = t.getLibelleTypeMvt();

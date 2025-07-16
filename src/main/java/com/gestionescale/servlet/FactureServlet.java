@@ -2,6 +2,7 @@ package com.gestionescale.servlet;
 
 import com.gestionescale.model.*;
 import com.gestionescale.service.implementation.FactureService;
+import com.gestionescale.service.implementation.BonPilotageService;
 import com.gestionescale.service.implementation.EscaleService;
 import com.gestionescale.dao.implementation.UtilisateurDAO;
 
@@ -79,6 +80,7 @@ public class FactureServlet extends HttpServlet {
         String action = request.getParameter("action");
         if (action == null) action = "";
 
+        // --- Cas de modification d'une facture existante ---
         if ("update".equals(action)) {
             int id = -1;
             try {
@@ -117,6 +119,7 @@ public class FactureServlet extends HttpServlet {
             return;
         }
 
+        // --- Génération d'une nouvelle facture pour une escale ---
         String numeroEscale = request.getParameter("numeroEscale");
         Utilisateur utilisateur = (Utilisateur) request.getSession().getAttribute("utilisateur");
         if (utilisateur == null) {
@@ -125,6 +128,24 @@ public class FactureServlet extends HttpServlet {
             return;
         }
         int idAgent = utilisateur.getId();
+
+        // Contrôle métier : on ne peut générer la facture que si toutes les règles sont respectées
+        BonPilotageService bonService = new BonPilotageService();
+        if (!bonService.hasBonEntreeValide(numeroEscale)
+                || !bonService.hasBonSortieValide(numeroEscale)
+                || !bonService.tousLesBonsSontValides(numeroEscale)) {
+            request.setAttribute("errorMessage", "Impossible de générer la facture : il faut un bon d'entrée validé, un bon de sortie validé, et que tous les bons soient validés.");
+            // Recharge la liste des escales terminées à facturer
+            EscaleService escaleService = new EscaleService();
+            try {
+                List<Escale> escalesTerminees = escaleService.getEscalesTermineesSansFacture();
+                request.setAttribute("escalesTerminees", escalesTerminees);
+            } catch (Exception ex) {
+                request.setAttribute("escalesTerminees", null);
+            }
+            request.getRequestDispatcher("/jsp/facture/escalesTerminees.jsp").forward(request, response);
+            return;
+        }
 
         try {
             Facture facture = factureService.genererFacturePourEscale(numeroEscale, idAgent);
