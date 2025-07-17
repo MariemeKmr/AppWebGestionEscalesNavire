@@ -104,6 +104,15 @@
   <servlet-name>FactureServlet</servlet-name>
   <url-pattern>/facture/*</url-pattern>
 </servlet-mapping>
+<servlet>
+  <servlet-name>NotificationServlet</servlet-name>
+  <servlet-class>com.gestionescale.servlet.NotificationServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+  <servlet-name>NotificationServlet</servlet-name>
+  <url-pattern>/notifications</url-pattern>
+</servlet-mapping>
+
 <filter>
     <filter-name>UserContextFilter</filter-name>
     <filter-class>com.gestionescale.filter.UserContextFilter</filter-class>

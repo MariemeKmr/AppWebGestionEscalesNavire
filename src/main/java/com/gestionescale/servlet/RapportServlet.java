@@ -16,6 +16,13 @@ import com.gestionescale.model.Escale;
 import com.gestionescale.model.Navire;
 import com.gestionescale.model.RecetteParPeriode;
 
+/**
+ * Servlet de gestion du rapport statistique.
+ * Cette servlet génère les données pour le tableau de bord analytique :
+ * statistiques sur les escales, navires, chiffre d'affaires, factures, recettes, répartition par navire ou consignataire, etc.
+ * Les données sont transmises à la vue /jsp/rapport.jsp pour affichage graphique et synthétique.
+ * (c) Marieme KAMARA
+ */
 @WebServlet("/rapport")
 public class RapportServlet extends HttpServlet {
     private EscaleDAO escaleDAO = new EscaleDAO();
@@ -23,11 +30,16 @@ public class RapportServlet extends HttpServlet {
     private FactureDAO factureDAO = new FactureDAO();
     private ConsignataireDAO consignataireDAO = new ConsignataireDAO();
 
+    /**
+     * Gère les requêtes GET pour l'affichage du rapport statistique.
+     * Accepte des paramètres de période (debut, fin) ; par défaut sur le dernier mois.
+     */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String debutStr = request.getParameter("debut");
         String finStr = request.getParameter("fin");
 
+        // Période analysée : par défaut, le mois précédent jusqu'à aujourd'hui
         LocalDate dateDebut = (debutStr != null && !debutStr.isEmpty()) ? LocalDate.parse(debutStr) : LocalDate.now().minusMonths(1);
         LocalDate dateFin = (finStr != null && !finStr.isEmpty()) ? LocalDate.parse(finStr) : LocalDate.now();
 
@@ -35,14 +47,14 @@ public class RapportServlet extends HttpServlet {
         Date sqlFin = Date.valueOf(dateFin);
 
         try {
-            // Données principales
+            // Données principales : escales, navires en escale, navires hors escale, statistiques CA
             List<Escale> escales = escaleDAO.getByPeriode(sqlDebut, sqlFin);
             List<Navire> naviresEnEscale = navireDAO.getEnEscale(sqlDebut, sqlFin);
             List<Navire> naviresHorsEscale = navireDAO.getHorsEscale(sqlDebut, sqlFin);
             double ca = factureDAO.getChiffreAffaires(sqlDebut, sqlFin);
             int nbFactures = factureDAO.getNbFactures(sqlDebut, sqlFin);
 
-            // Pour les graphiques
+            // Pour graphiques : nombre d'escales par navire
             Map<String, Integer> escalesParNavire = new LinkedHashMap<>();
             for (Escale escale : escales) {
                 String navire = (escale.getMyNavire() != null && escale.getMyNavire().getNomNavire() != null)
@@ -51,10 +63,10 @@ public class RapportServlet extends HttpServlet {
                 escalesParNavire.put(navire, escalesParNavire.getOrDefault(navire, 0) + 1);
             }
 
-            // Nouvelle version : nombre de navires par consignataire
+            // Statistiques : nombre de navires par consignataire
             Map<String, Integer> naviresParConsignataire = consignataireDAO.getNaviresParConsignataire();
 
-            // Facturation
+            // Répartition des escales par état de facturation/clôture
             List<Escale> escalesClotureesFacturees = escaleDAO.getClotureesFacturees(sqlDebut, sqlFin);
             List<Escale> escalesClotureesNonFacturees = escaleDAO.getClotureesNonFacturees(sqlDebut, sqlFin);
             List<Escale> escalesNonCloturees = escaleDAO.getNonCloturees(sqlDebut, sqlFin);
@@ -63,7 +75,7 @@ public class RapportServlet extends HttpServlet {
             int nbClotureesNonFacturees = escalesClotureesNonFacturees.size();
             int nbNonCloturees = escalesNonCloturees.size();
 
-            // Recettes
+            // Recettes pour graphiques temporels (par année, mois, jour)
             List<RecetteParPeriode> recettesParAn = factureDAO.getRecettesParAn(sqlDebut, sqlFin);
             List<RecetteParPeriode> recettesParMois = factureDAO.getRecettesParMois(sqlDebut, sqlFin);
             List<RecetteParPeriode> recettesParJour = factureDAO.getRecettesParJour(sqlDebut, sqlFin);
@@ -85,12 +97,14 @@ public class RapportServlet extends HttpServlet {
             request.setAttribute("recettesParMois", recettesParMois);
             request.setAttribute("recettesParJour", recettesParJour);
 
-            // Pour compatibilité JS
+            // Pour compatibilité JS graphique
             request.setAttribute("recettes", recettesParMois);
 
+            // Redirection vers la page de rapport
             request.getRequestDispatcher("/jsp/rapport.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
+            // En cas d'erreur, message d'erreur affiché dans la vue rapport
             request.setAttribute("error", "Erreur lors du chargement des rapports : " + e.getMessage());
             request.getRequestDispatcher("/jsp/rapport.jsp").forward(request, response);
         }

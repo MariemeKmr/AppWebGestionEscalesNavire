@@ -8,8 +8,19 @@ import java.sql.*;
 import java.sql.Date;
 import java.util.*;
 
+/**
+ * DAO pour la gestion des factures dans l'application d'escales de navires.
+ * Cette classe centralise toutes les opérations CRUD et les statistiques
+ * liées aux factures (ajout, suppression, modification, recherche, calculs de recettes).
+ * (c) Marieme KAMARA
+ */
 public class FactureDAO {
 
+    /**
+     * Ajoute une nouvelle facture en base.
+     * On récupère ici l'id généré automatiquement pour l'affecter à l'objet Facture.
+     * @param facture La facture à ajouter
+     */
     public void ajouterFacture(Facture facture) throws Exception {
         String sql = "INSERT INTO facture (numero_facture, date_generation, montant_total, id_agent, numero_escale) VALUES (?, ?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -20,6 +31,7 @@ public class FactureDAO {
             ps.setInt(4, facture.getIdAgent());
             ps.setString(5, facture.getNumeroEscale());
             ps.executeUpdate();
+            // On récupère l'id généré en base après l'insertion
             try (ResultSet rs = ps.getGeneratedKeys()) {
                 if (rs.next()) {
                     facture.setId(rs.getInt(1));
@@ -28,6 +40,11 @@ public class FactureDAO {
         }
     }
 
+    /**
+     * Retourne la liste de toutes les factures, les plus récentes en premier.
+     * On ajoute le nom complet de l'agent qui a généré chaque facture.
+     * @return Liste de Facture
+     */
     public List<Facture> trouverToutes() throws Exception {
         List<Facture> factures = new ArrayList<>();
         String sql = "SELECT f.*, u.nom_complet AS agent_nom " +
@@ -44,6 +61,12 @@ public class FactureDAO {
         return factures;
     }
 
+    /**
+     * Recherche une facture précise par id.
+     * On récupère aussi le nom de l'agent qui l'a générée.
+     * @param id Identifiant de la facture
+     * @return Facture ou null si pas trouvée
+     */
     public Facture trouverParId(int id) throws Exception {
         String sql = "SELECT f.*, u.nom_complet AS agent_nom " +
                      "FROM facture f " +
@@ -59,6 +82,11 @@ public class FactureDAO {
         return null;
     }
 
+    /**
+     * Supprime une facture par son id.
+     * Attention : d'abord supprimer les éventuels liens en table de jointure pour respecter l'intégrité référentielle.
+     * @param id Id de la facture à supprimer
+     */
     public void supprimerFacture(int id) throws Exception {
         try (Connection conn = DatabaseConnection.getConnection()) {
             // Supprimer d'abord les liens dans la table de jointure
@@ -76,6 +104,11 @@ public class FactureDAO {
         }
     }
 
+    /**
+     * Modifie le montant total d'une facture existante.
+     * @param id Id de la facture
+     * @param montantTotal Nouveau montant
+     */
     public void modifierMontantFacture(int id, double montantTotal) throws Exception {
         String sql = "UPDATE facture SET montant_total = ? WHERE id = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -86,6 +119,12 @@ public class FactureDAO {
         }
     }
 
+    /**
+     * Effectue une recherche multi-critères sur les factures (numéro, escale, nom agent).
+     * Utile pour filtrer les factures dans une interface utilisateur.
+     * @param query Terme à chercher
+     * @return Liste des factures correspondantes
+     */
     public List<Facture> rechercherFactures(String query) throws Exception {
         List<Facture> factures = new ArrayList<>();
         String sql = "SELECT f.*, u.nom_complet AS agent_nom " +
@@ -107,7 +146,11 @@ public class FactureDAO {
         return factures;
     }
 
-    // Modification du prix du séjour d'une escale
+    /**
+     * Met à jour le prix du séjour pour une escale donnée.
+     * @param numeroEscale Numéro de l’escale
+     * @param prixSejour Nouveau prix du séjour
+     */
     public void modifierPrixSejourEscale(String numeroEscale, double prixSejour) throws Exception {
         String sql = "UPDATE escale SET prixSejour = ? WHERE numeroEscale = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -118,7 +161,11 @@ public class FactureDAO {
         }
     }
 
-    // Modification du montant d'un bon de pilotage
+    /**
+     * Met à jour le montant d’un bon de pilotage (lié à un mouvement).
+     * @param idMouvement Identifiant du mouvement
+     * @param montEscale Nouveau montant
+     */
     public void modifierMontantBonPilotage(int idMouvement, double montEscale) throws Exception {
         String sql = "UPDATE bonpilotage SET montEscale = ? WHERE idMouvement = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -129,6 +176,12 @@ public class FactureDAO {
         }
     }
 
+    /**
+     * Permet de créer une instance de Facture à partir d’un ResultSet SQL.
+     * On gère aussi le nom de l’agent si la jointure est présente.
+     * @param rs Résultat SQL
+     * @return Facture
+     */
     private Facture mapFacture(ResultSet rs) throws Exception {
         Facture f = new Facture();
         f.setId(rs.getInt("id"));
@@ -144,7 +197,12 @@ public class FactureDAO {
         return f;
     }
 
-    // Chiffre d'affaires sur une période
+    /**
+     * Calcule le chiffre d'affaires total (somme des montants) sur une période donnée.
+     * @param debut Date de début
+     * @param fin Date de fin
+     * @return Chiffre d'affaires
+     */
     public double getChiffreAffaires(java.util.Date debut, java.util.Date fin) throws Exception {
         String sql = "SELECT SUM(montant_total) FROM facture WHERE date_generation BETWEEN ? AND ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -157,7 +215,12 @@ public class FactureDAO {
         return 0;
     }
 
-    // Nombre de factures sur une période
+    /**
+     * Retourne le nombre de factures générées sur une période donnée.
+     * @param debut Date de début
+     * @param fin Date de fin
+     * @return Nombre de factures
+     */
     public int getNbFactures(java.util.Date debut, java.util.Date fin) throws Exception {
         String sql = "SELECT COUNT(*) FROM facture WHERE date_generation BETWEEN ? AND ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -170,6 +233,10 @@ public class FactureDAO {
         return 0;
     }
 
+    /**
+     * Donne la liste des recettes par année sur une période donnée.
+     * Permet de générer des graphiques ou rapports annuels.
+     */
     public List<RecetteParPeriode> getRecettesParAn(Date debut, Date fin) throws Exception {
         List<RecetteParPeriode> list = new ArrayList<>();
         String sql = "SELECT YEAR(date_generation) AS annee, SUM(montant_total) AS montant " +
@@ -189,6 +256,10 @@ public class FactureDAO {
         return list;
     }
 
+    /**
+     * Donne la liste des recettes par mois sur une période donnée.
+     * Pour suivi mensuel du chiffre d'affaires.
+     */
     public List<RecetteParPeriode> getRecettesParMois(Date debut, Date fin) throws Exception {
         List<RecetteParPeriode> list = new ArrayList<>();
         String sql = "SELECT YEAR(date_generation) AS annee, MONTH(date_generation) AS mois, SUM(montant_total) AS montant " +
@@ -209,6 +280,10 @@ public class FactureDAO {
         return list;
     }
 
+    /**
+     * Donne la liste des recettes par jour sur une période donnée.
+     * Pour des statistiques fines et le suivi quotidien.
+     */
     public List<RecetteParPeriode> getRecettesParJour(Date debut, Date fin) throws Exception {
         List<RecetteParPeriode> list = new ArrayList<>();
         String sql = "SELECT DATE(date_generation) AS jour, SUM(montant_total) AS montant " +
@@ -228,7 +303,9 @@ public class FactureDAO {
         return list;
     }
 
-
+    /**
+     * Alias pour getChiffreAffaires, pour compatibilité ou simplification.
+     */
     public double getCAParPeriode(java.util.Date debut, java.util.Date fin) throws Exception {
         return getChiffreAffaires(debut, fin);
     }

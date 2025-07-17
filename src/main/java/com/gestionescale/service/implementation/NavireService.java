@@ -8,14 +8,30 @@ import com.gestionescale.service.interfaces.INavireService;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * Service métier pour la gestion des navires.
+ * Cette classe fait l'interface entre la couche présentation/contrôleur et le DAO,
+ * encapsulant la logique métier liée aux navires : création, modification, suppression,
+ * recherche et récupération de la liste de tous les navires.
+ * (c) Marieme KAMARA
+ */
 public class NavireService implements INavireService {
 
+    // DAO responsable de l'accès aux données des navires
     private INavireDAO navireDAO;
 
+    /**
+     * Constructeur par défaut : instancie le DAO utilisé.
+     */
     public NavireService() {
         this.navireDAO = new NavireDAO();
     }
 
+    /**
+     * Ajoute un nouveau navire en base.
+     * @param navire Navire à ajouter
+     * @throws RuntimeException en cas d'échec SQL
+     */
     @Override
     public void ajouterNavire(Navire navire) {
         try {
@@ -25,6 +41,12 @@ public class NavireService implements INavireService {
         }
     }
 
+    /**
+     * Recherche un navire par son numéro.
+     * @param numeroNavire Numéro du navire
+     * @return Navire trouvé ou null
+     * @throws RuntimeException en cas d'échec SQL
+     */
     @Override
     public Navire getNavireParNumero(String numeroNavire) {
         try {
@@ -34,6 +56,11 @@ public class NavireService implements INavireService {
         }
     }
 
+    /**
+     * Récupère la liste de tous les navires enregistrés.
+     * @return Liste de navires
+     * @throws RuntimeException en cas d'échec SQL
+     */
     @Override
     public List<Navire> getTousLesNavires() {
         try {
@@ -43,6 +70,11 @@ public class NavireService implements INavireService {
         }
     }
 
+    /**
+     * Modifie les informations d'un navire existant.
+     * @param navire Navire à modifier
+     * @throws RuntimeException en cas d'échec SQL
+     */
     @Override
     public void modifierNavire(Navire navire) {
         try {
@@ -52,6 +84,11 @@ public class NavireService implements INavireService {
         }
     }
 
+    /**
+     * Supprime un navire de la base par son numéro.
+     * @param numeroNavire Numéro du navire à supprimer
+     * @throws RuntimeException en cas d'échec SQL
+     */
     @Override
     public void supprimerNavire(String numeroNavire) {
         try {

@@ -10,11 +10,24 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * DAO pour la gestion des navires dans l'application de gestion des escales.
+ * Cette classe permet d'effectuer toutes les opérations CRUD (ajout, modification, suppression, consultation)
+ * ainsi que diverses recherches et filtrages sur les navires.
+ * Elle gère également la pagination et les requêtes spécifiques liées aux escales.
+ * (c) Marieme KAMARA
+ */
 public class NavireDAO implements INavireDAO {
 
+    // DAOs pour récupérer les informations d'armateur et de consignataire liées à un navire
     private ConsignataireDAO consignataireDAO = new ConsignataireDAO();
     private ArmateurDAO armateurDAO = new ArmateurDAO();
 
+    /**
+     * Ajoute un navire en base de données.
+     * Armateur obligatoire, consignataire facultatif.
+     * @param navire Le navire à ajouter
+     */
     @Override
     public void ajouterNavire(Navire navire) {
         String sql = "INSERT INTO navire (numeroNavire, nomNavire, longueurNavire, largeurNavire, volumeNavire, tirantEauNavire, idArmateur, idConsignataire) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
@@ -25,9 +38,9 @@ public class NavireDAO implements INavireDAO {
             ps.setDouble(4, navire.getLargeurNavire());
             ps.setDouble(5, navire.getVolumeNavire());
             ps.setDouble(6, navire.getTiranEauNavire());
-            // Armateur obligatoire (ne jamais null!)
+            // Armateur obligatoire (jamais null)
             ps.setInt(7, navire.getArmateur().getIdArmateur());
-            // Consignataire facultatif
+            // Consignataire facultatif (peut être null)
             if (navire.getConsignataire() != null) {
                 ps.setInt(8, navire.getConsignataire().getIdConsignataire());
             } else {
@@ -39,6 +52,12 @@ public class NavireDAO implements INavireDAO {
         }
     }
 
+    /**
+     * Récupère un navire par son numéro.
+     * Charge également l'armateur et le consignataire associés.
+     * @param numeroNavire Numéro du navire
+     * @return Navire trouvé ou null
+     */
     @Override
     public Navire getNavireParNumero(String numeroNavire) throws SQLException {
         String sql = "SELECT * FROM navire WHERE numeroNavire = ?";
@@ -59,6 +78,7 @@ public class NavireDAO implements INavireDAO {
                 navire.setVolumeNavire(rs.getDouble("volumeNavire"));
                 navire.setTiranEauNavire(rs.getDouble("tirantEauNavire"));
 
+                // Récupération de l'armateur
                 int idArmateur = rs.getInt("idArmateur");
                 Armateur armateur = null;
                 try {
@@ -68,6 +88,7 @@ public class NavireDAO implements INavireDAO {
                 }
                 navire.setArmateur(armateur);
 
+                // Récupération du consignataire s'il existe
                 int idConsignataire = rs.getInt("idConsignataire");
                 if (!rs.wasNull()) {
                     Consignataire consignataire = null;
@@ -83,6 +104,11 @@ public class NavireDAO implements INavireDAO {
         return navire;
     }
 
+    /**
+     * Retourne la liste de tous les navires en base.
+     * Charge pour chaque navire l'armateur et le consignataire associés.
+     * @return Liste de navires
+     */
     @Override
     public List<Navire> getTousLesNavires() throws SQLException {
         List<Navire> navires = new ArrayList<>();
@@ -101,6 +127,7 @@ public class NavireDAO implements INavireDAO {
                 navire.setVolumeNavire(rs.getDouble("volumeNavire"));
                 navire.setTiranEauNavire(rs.getDouble("tirantEauNavire"));
 
+                // Armateur lié
                 int idArmateur = rs.getInt("idArmateur");
                 Armateur armateur = null;
                 try {
@@ -110,6 +137,7 @@ public class NavireDAO implements INavireDAO {
                 }
                 navire.setArmateur(armateur);
 
+                // Consignataire lié s'il existe
                 int idConsignataire = rs.getInt("idConsignataire");
                 if (!rs.wasNull()) {
                     Consignataire consignataire = null;
@@ -128,7 +156,10 @@ public class NavireDAO implements INavireDAO {
         return navires;
     }
 
-    // --- Pagination support ---
+    /**
+     * Retourne le nombre total de navires en base (pour pagination).
+     * @return Nombre de navires
+     */
     public int countNavires() throws SQLException {
         String sql = "SELECT COUNT(*) FROM navire";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -141,6 +172,12 @@ public class NavireDAO implements INavireDAO {
         return 0;
     }
 
+    /**
+     * Retourne une page de navires (support de pagination).
+     * @param offset Position de départ
+     * @param limit Nombre maximum de navires à retourner
+     * @return Liste de navires
+     */
     public List<Navire> getNaviresPage(int offset, int limit) throws SQLException {
         List<Navire> navires = new ArrayList<>();
         String sql = "SELECT * FROM navire LIMIT ? OFFSET ?";
@@ -157,6 +194,7 @@ public class NavireDAO implements INavireDAO {
                     navire.setLargeurNavire(rs.getDouble("largeurNavire"));
                     navire.setVolumeNavire(rs.getDouble("volumeNavire"));
                     navire.setTiranEauNavire(rs.getDouble("tirantEauNavire"));
+                    // Armateur lié
                     int idArmateur = rs.getInt("idArmateur");
                     Armateur armateur = null;
                     try {
@@ -166,6 +204,7 @@ public class NavireDAO implements INavireDAO {
                     }
                     navire.setArmateur(armateur);
 
+                    // Consignataire lié s'il existe
                     int idConsignataire = rs.getInt("idConsignataire");
                     if (!rs.wasNull()) {
                         Consignataire consignataire = null;
@@ -183,6 +222,11 @@ public class NavireDAO implements INavireDAO {
         return navires;
     }
 
+    /**
+     * Modifie les informations d'un navire existant.
+     * Armateur obligatoire, consignataire facultatif.
+     * @param navire Le navire à modifier
+     */
     @Override
     public void modifierNavire(Navire navire) throws SQLException {
         String sql = "UPDATE navire SET nomNavire = ?, longueurNavire = ?, largeurNavire = ?, volumeNavire = ?, tirantEauNavire = ?, idArmateur = ?, idConsignataire = ? WHERE numeroNavire = ?";
@@ -205,6 +249,10 @@ public class NavireDAO implements INavireDAO {
         }
     }
 
+    /**
+     * Supprime un navire de la base par son numéro.
+     * @param numeroNavire Numéro du navire à supprimer
+     */
     @Override
     public void supprimerNavire(String numeroNavire) throws SQLException {
         String sql = "DELETE FROM navire WHERE numeroNavire = ?";
@@ -217,6 +265,12 @@ public class NavireDAO implements INavireDAO {
         }
     }
 
+    /**
+     * Liste les navires liés à un consignataire donné.
+     * Utile pour filtrer les navires par agent ou par société de consignation.
+     * @param idConsignataire Id du consignataire
+     * @return Liste de navires
+     */
     public List<Navire> getNaviresByConsignataire(int idConsignataire) {
         List<Navire> navires = new ArrayList<>();
         String sql = "SELECT * FROM navire WHERE idConsignataire = ?";
@@ -246,10 +300,15 @@ public class NavireDAO implements INavireDAO {
         }
         return navires;
     }
-    
+
+    /**
+     * Liste les navires associés à un armateur donné.
+     * @param idArmateur Id de l'armateur
+     * @return Liste de navires
+     */
     public List<Navire> listerNaviresParArmateur(int idArmateur) throws SQLException {
         List<Navire> navires = new ArrayList<>();
-        String sql = "SELECT * FROM navire WHERE idArmateur = ?";;
+        String sql = "SELECT * FROM navire WHERE idArmateur = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, idArmateur);
@@ -264,7 +323,14 @@ public class NavireDAO implements INavireDAO {
         }
         return navires;
     }
- // Navires EN escale sur la période : présents dans une escale dont la période inclut au moins une journée de l’intervalle
+
+    /**
+     * Retourne la liste des navires EN escale sur la période donnée.
+     * Un navire est considéré "en escale" s'il est présent dans une escale dont la période recoupe l'intervalle demandé.
+     * @param debut Date de début de la période
+     * @param fin Date de fin de la période
+     * @return Liste de navires en escale
+     */
     public List<Navire> getEnEscale(java.sql.Date debut, java.sql.Date fin) throws SQLException {
         List<Navire> navires = new ArrayList<>();
         String sql = "SELECT DISTINCT n.* FROM navire n " +
@@ -282,7 +348,13 @@ public class NavireDAO implements INavireDAO {
         return navires;
     }
 
-    // Navires HORS escale sur la période : pas présents dans une escale sur la période
+    /**
+     * Retourne la liste des navires HORS escale sur la période donnée.
+     * Un navire est "hors escale" s'il n'est présent dans aucune escale sur cette période.
+     * @param debut Date de début de la période
+     * @param fin Date de fin de la période
+     * @return Liste de navires hors escale
+     */
     public List<Navire> getHorsEscale(java.sql.Date debut, java.sql.Date fin) throws SQLException {
         List<Navire> navires = new ArrayList<>();
         String sql = "SELECT * FROM navire n WHERE n.numeroNavire NOT IN (" +

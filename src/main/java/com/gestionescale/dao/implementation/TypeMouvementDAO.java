@@ -8,8 +8,19 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * DAO pour la gestion des types de mouvements dans l'application d'escales de navires.
+ * Cette classe permet d'ajouter, modifier, supprimer et lister les différents types de mouvements
+ * (exemple : entrée, sortie, déplacement...) utilisés lors des opérations portuaires.
+ * Toutes les opérations sont réalisées sur la table 'typemouvement'.
+ * (c) Marieme KAMARA
+ */
 public class TypeMouvementDAO implements ITypeMouvementDAO {
 
+    /**
+     * Ajoute un nouveau type de mouvement en base.
+     * @param typeMvt Objet TypeMouvement à insérer
+     */
     @Override
     public void ajouterTypeMouvement(TypeMouvement typeMvt) throws SQLException {
         String sql = "INSERT INTO typemouvement (codeTypeMvt, libelleTypeMvt, prixTypeMvt) VALUES (?, ?, ?)";
@@ -25,6 +36,11 @@ public class TypeMouvementDAO implements ITypeMouvementDAO {
         }
     }
 
+    /**
+     * Recherche un type de mouvement par son code unique.
+     * @param code Code du type de mouvement (clé primaire)
+     * @return TypeMouvement trouvé ou null
+     */
     @Override
     public TypeMouvement getTypeMouvementParCode(String code) throws SQLException {
         String sql = "SELECT * FROM typemouvement WHERE codeTypeMvt = ?";
@@ -47,6 +63,10 @@ public class TypeMouvementDAO implements ITypeMouvementDAO {
         return typeMvt;
     }
 
+    /**
+     * Liste tous les types de mouvements enregistrés en base.
+     * @return Liste de TypeMouvement
+     */
     @Override
     public List<TypeMouvement> getTousLesTypesMouvement() throws SQLException {
         List<TypeMouvement> liste = new ArrayList<>();
@@ -68,6 +88,10 @@ public class TypeMouvementDAO implements ITypeMouvementDAO {
         return liste;
     }
 
+    /**
+     * Modifie un type de mouvement existant (libellé et prix).
+     * @param typeMvt TypeMouvement contenant les nouvelles valeurs
+     */
     @Override
     public void modifierTypeMouvement(TypeMouvement typeMvt) throws SQLException {
         String sql = "UPDATE typemouvement SET libelleTypeMvt = ?, prixTypeMvt = ? WHERE codeTypeMvt = ?";
@@ -83,6 +107,10 @@ public class TypeMouvementDAO implements ITypeMouvementDAO {
         }
     }
 
+    /**
+     * Supprime un type de mouvement de la base (par code).
+     * @param code Code du type à supprimer
+     */
     @Override
     public void supprimerTypeMouvement(String code) throws SQLException {
         String sql = "DELETE FROM typemouvement WHERE codeTypeMvt = ?";

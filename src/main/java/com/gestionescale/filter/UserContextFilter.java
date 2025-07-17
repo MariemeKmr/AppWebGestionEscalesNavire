@@ -38,7 +38,7 @@ public class UserContextFilter implements Filter {
             }
             chain.doFilter(request, response);
         } finally {
-            UtilisateurContext.clear(); // Important pour éviter les fuites de contexte !
+            UtilisateurContext.clear(); // Important pour éviter les fuites de contexte 
         }
     }
 

@@ -12,8 +12,19 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * DAO pour la gestion des Bons de Pilotage.
+ * Toutes les opérations CRUD pour l'entité BonPilotage passent par cette classe.
+ * J'ai aussi ajouté des méthodes de recherche multi-critère et des vérifications utiles pour la logique métier.
+ * (c) Marieme KAMARA
+ */
 public class BonPilotageDAO implements IBonPilotageDAO {
 
+    /**
+     * Ajoute un nouveau bon de pilotage dans la base.
+     * @param bon Le bon de pilotage à ajouter
+     * @throws SQLException en cas d'erreur SQL
+     */
     @Override
     public void ajouterBonPilotage(BonPilotage bon) throws SQLException {
         String sql = "INSERT INTO bonpilotage (montEscale, dateDebutBon, dateFinBon, posteQuai, codeTypeMvt, numeroEscale, etat) VALUES (?, ?, ?, ?, ?, ?, ?)";
@@ -30,6 +41,12 @@ public class BonPilotageDAO implements IBonPilotageDAO {
         }
     }
 
+    /**
+     * Récupère un bon de pilotage par son identifiant.
+     * @param idMouvement l'identifiant du mouvement
+     * @return Le bon de pilotage ou null si non trouvé
+     * @throws SQLException en cas d'erreur SQL
+     */
     @Override
     public BonPilotage getBonPilotageParId(int idMouvement) throws SQLException {
         String sql = "SELECT * FROM bonpilotage WHERE idMouvement = ?";
@@ -45,6 +62,11 @@ public class BonPilotageDAO implements IBonPilotageDAO {
         return bon;
     }
 
+    /**
+     * Récupère la liste de tous les bons de pilotage qui n'ont pas encore de facture associée.
+     * @return Liste des bons de pilotage à facturer
+     * @throws SQLException en cas d'erreur SQL
+     */
     @Override
     public List<BonPilotage> getTousLesBons() throws SQLException {
         List<BonPilotage> liste = new ArrayList<>();
@@ -62,6 +84,11 @@ public class BonPilotageDAO implements IBonPilotageDAO {
         return liste;
     }
 
+    /**
+     * Supprime un bon de pilotage à partir de son identifiant.
+     * @param idMouvement l'id du mouvement à supprimer
+     * @throws SQLException en cas d'erreur SQL
+     */
     @Override
     public void supprimerBon(int idMouvement) throws SQLException {
         String sql = "DELETE FROM bonpilotage WHERE idMouvement = ?";
@@ -72,6 +99,11 @@ public class BonPilotageDAO implements IBonPilotageDAO {
         }
     }
 
+    /**
+     * Met à jour les informations d'un bon de pilotage.
+     * @param bon Le bon de pilotage modifié
+     * @throws SQLException en cas d'erreur SQL
+     */
     @Override
     public void modifierBon(BonPilotage bon) throws SQLException {
         String sql = "UPDATE bonpilotage SET montEscale=?, dateDebutBon=?, dateFinBon=?, posteQuai=?, codeTypeMvt=?, numeroEscale=?, etat=? WHERE idMouvement=?";
@@ -90,9 +122,11 @@ public class BonPilotageDAO implements IBonPilotageDAO {
     }
 
     /**
-     * Recherche multi-critère sur le numéro d'escale, nom ou numéro navire, ou consignataire.
-     * @param search la chaîne de recherche (appliquée sur numéroEscale, nomNavire, numeroNavire, raisonSociale)
+     * Recherche multi-critère sur le numéro d'escale, nom ou numéro du navire, ou consignataire.
+     * Cela me permet de filtrer rapidement les bons de pilotage depuis un champ de recherche global.
+     * @param search la chaîne de recherche (appliquée sur plusieurs champs)
      * @return liste des bons filtrés
+     * @throws SQLException en cas d'erreur SQL
      */
     public List<BonPilotage> rechercherMulti(String search) throws SQLException {
         List<BonPilotage> liste = new ArrayList<>();
@@ -113,7 +147,7 @@ public class BonPilotageDAO implements IBonPilotageDAO {
             stmt.setString(4, filtre);
             ResultSet rs = stmt.executeQuery();
             while (rs.next()) {
-                // Construction objets liés
+                // Ici, je construis les objets liés à chaque bon pour un affichage riche
                 Navire navire = new Navire();
                 navire.setNomNavire(rs.getString("nomNavire"));
                 navire.setNumeroNavire(rs.getString("numeroNavire"));
@@ -144,9 +178,14 @@ public class BonPilotageDAO implements IBonPilotageDAO {
         }
         return liste;
     }
-    
+
+    /**
+     * Valide un bon de pilotage (change son état à 'Validé').
+     * @param idMouvement l'identifiant du bon à valider
+     * @throws SQLException en cas d'erreur SQL
+     */
     public void validerBon(int idMouvement) throws SQLException {
-        String sql = "UPDATE bonpilotage SET etat = 'Validé' WHERE idMouvement = ?";
+        String sql = "UPDATE bonpilotage SET etat = 'Valide' WHERE idMouvement = ?";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql)) {
             stmt.setInt(1, idMouvement);
@@ -155,7 +194,10 @@ public class BonPilotageDAO implements IBonPilotageDAO {
     }
 
     /**
-     * Récupère la liste des bons de pilotage associés à une escale donnée.
+     * Récupère la liste des bons de pilotage liés à une escale donnée.
+     * @param numeroEscale le numéro de l'escale
+     * @return liste des bons associés à cette escale
+     * @throws SQLException en cas d'erreur SQL
      */
     public List<BonPilotage> findByNumeroEscale(String numeroEscale) throws SQLException {
         List<BonPilotage> liste = new ArrayList<>();
@@ -172,6 +214,10 @@ public class BonPilotageDAO implements IBonPilotageDAO {
         return liste;
     }
 
+    /**
+     * Méthode utilitaire pour transformer une ligne SQL en objet BonPilotage,
+     * en allant chercher les objets liés (escale, type mouvement).
+     */
     private BonPilotage mapResultSetToBonPilotage(ResultSet rs) throws SQLException {
         BonPilotage bon = new BonPilotage();
         bon.setIdMouvement(rs.getInt("idMouvement"));
@@ -181,6 +227,7 @@ public class BonPilotageDAO implements IBonPilotageDAO {
         bon.setPosteAQuai(rs.getString("posteQuai"));
         bon.setEtat(rs.getString("etat"));
 
+        // J'utilise les autres DAO pour enrichir le bon de pilotage
         Escale escale = new EscaleDAO().getEscaleParNumero(rs.getString("numeroEscale"));
         bon.setMonEscale(escale);
 
@@ -189,7 +236,11 @@ public class BonPilotageDAO implements IBonPilotageDAO {
 
         return bon;
     }
-    
+
+    /**
+     * Vérifie s'il existe déjà un bon de ce type (entrée ou sortie) pour une escale donnée.
+     * Pratique pour éviter les doublons de bons d'entrée/sortie.
+     */
     public boolean existeBonDeCeTypePourEscale(String numeroEscale, String codeTypeMvt) throws SQLException {
         String sql = "SELECT COUNT(*) FROM bonpilotage WHERE numeroEscale = ? AND codeTypeMvt = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -204,9 +255,14 @@ public class BonPilotageDAO implements IBonPilotageDAO {
         return false;
     }
 
+    /**
+     * Liste les bons de pilotage qui sont prêts pour la facturation (état 'Validé').
+     * @return liste des bons validés
+     * @throws SQLException en cas d'erreur SQL
+     */
     public List<BonPilotage> getBonsValidesPourFacturation() throws SQLException {
         List<BonPilotage> liste = new ArrayList<>();
-        String sql = "SELECT * FROM bonpilotage WHERE etat = 'Validé'";
+        String sql = "SELECT * FROM bonpilotage WHERE etat = 'Valide'";
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement stmt = conn.prepareStatement(sql);
              ResultSet rs = stmt.executeQuery()) {

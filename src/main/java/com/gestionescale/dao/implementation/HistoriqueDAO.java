@@ -12,7 +12,20 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 
+/**
+ * DAO pour la gestion de l'historique des opérations.
+ * Cette classe permet d'ajouter des entrées d'historique et d'effectuer des recherches
+ * pour garder une trace de toutes les actions réalisées dans l'application.
+ * (c) Marieme KAMARA
+ */
 public class HistoriqueDAO {
+
+    /**
+     * Enregistre une nouvelle entrée dans l'historique.
+     * J'utilise cette méthode pour tracer qui fait quoi dans l'application,
+     * ce qui est utile pour le suivi et la sécurité.
+     * @param historique L'objet Historique à ajouter en base
+     */
     public void ajouterHistorique(Historique historique) {
         String sql = "INSERT INTO historique (utilisateur, operation, description, date_operation) VALUES (?, ?, ?, ?)";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -23,10 +36,15 @@ public class HistoriqueDAO {
             ps.setTimestamp(4, new Timestamp(historique.getDateOperation().getTime()));
             ps.executeUpdate();
         } catch (SQLException e) {
+            // En cas d'échec, j'affiche l'erreur (penser à logger en prod)
             e.printStackTrace();
         }
     }
     
+    /**
+     * Liste toutes les opérations de l'historique, les plus récentes en premier.
+     * @return Liste d'objets Historique
+     */
     public List<Historique> lister() {
         List<Historique> historiques = new ArrayList<>();
         String sql = "SELECT * FROM historique ORDER BY date_operation DESC";
@@ -48,6 +66,11 @@ public class HistoriqueDAO {
         return historiques;
     }
 
+    /**
+     * Recherche dans l'historique par mot-clé (utilisateur, opération ou description).
+     * @param motCle Le mot-clé à rechercher (ex: "SUPPRESSION" ou "admin")
+     * @return Liste filtrée de l'historique
+     */
     public List<Historique> rechercherParMotCle(String motCle) {
         List<Historique> historiques = new ArrayList<>();
         String sql = "SELECT * FROM historique WHERE utilisateur LIKE ? OR operation LIKE ? OR description LIKE ? ORDER BY date_operation DESC";

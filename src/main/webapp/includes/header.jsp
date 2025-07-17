@@ -21,7 +21,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item notification-icon">
-                        <a class="nav-link" href="${pageContext.request.contextPath}/jsp/notification.jsp">
+                        <a class="nav-link" href="${pageContext.request.contextPath}/notifications">
                             <i class="fas fa-bell"></i>
                             <span class="badge">3</span>
                         </a>

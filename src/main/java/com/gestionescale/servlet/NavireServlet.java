@@ -15,12 +15,22 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+/**
+ * Servlet de gestion des navires.
+ * Permet l'ajout, la modification, la suppression, la consultation (liste, détails)
+ * des navires. Prend en charge la sélection ou la création d'armateurs/consignataires
+ * lors de la gestion des navires.
+ * (c) Marieme KAMARA
+ */
 public class NavireServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private NavireDAO navireDAO;
     private ConsignataireDAO consignataireDAO;
     private ArmateurDAO armateurDAO;
 
+    /**
+     * Constructeur : instancie les DAO nécessaires.
+     */
     public NavireServlet() {
         super();
         navireDAO = new NavireDAO();
@@ -28,6 +38,10 @@ public class NavireServlet extends HttpServlet {
         armateurDAO = new ArmateurDAO();
     }
 
+    /**
+     * Gère les requêtes GET pour la consultation, l'affichage du formulaire,
+     * la modification, la suppression et la visualisation d'un navire.
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
@@ -39,18 +53,23 @@ public class NavireServlet extends HttpServlet {
 
             switch (action) {
                 case "new":
+                    // Affiche le formulaire d'ajout d'un navire
                     showNewForm(request, response);
                     break;
                 case "edit":
+                    // Affiche le formulaire de modification d'un navire existant
                     showEditForm(request, response);
                     break;
                 case "view":
+                    // Affiche les détails d'un navire
                     viewNavire(request, response);
                     break;
                 case "delete":
+                    // Suppression d'un navire
                     deleteNavire(request, response);
                     break;
                 default:
+                    // Liste paginée des navires
                     listNavires(request, response);
                     break;
             }
@@ -59,7 +78,9 @@ public class NavireServlet extends HttpServlet {
         }
     }
 
-    // Pagination: 10 éléments/page
+    /**
+     * Affiche la liste paginée des navires (10 par page).
+     */
     private void listNavires(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
         int page = 1;
@@ -84,6 +105,10 @@ public class NavireServlet extends HttpServlet {
         request.getRequestDispatcher("/jsp/navire/list.jsp").forward(request, response);
     }
 
+    /**
+     * Affiche le formulaire d'ajout d'un nouveau navire,
+     * avec la liste des armateurs et consignataires.
+     */
     private void showNewForm(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException, SQLException {
         try {
@@ -97,6 +122,10 @@ public class NavireServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Affiche le formulaire de modification d'un navire existant,
+     * avec la liste des armateurs et consignataires.
+     */
     private void showEditForm(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, ServletException, IOException {
         try {
@@ -114,6 +143,9 @@ public class NavireServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Affiche les détails d'un navire.
+     */
     private void viewNavire(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
         String numeroNavire = request.getParameter("numeroNavire");
@@ -122,6 +154,9 @@ public class NavireServlet extends HttpServlet {
         request.getRequestDispatcher("/jsp/navire/view.jsp").forward(request, response);
     }
 
+    /**
+     * Supprime un navire par son numéro.
+     */
     private void deleteNavire(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException {
         String numeroNavire = request.getParameter("numeroNavire");
@@ -129,6 +164,9 @@ public class NavireServlet extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/navire?action=list");
     }
 
+    /**
+     * Gère les requêtes POST pour l'insertion ou la modification d'un navire.
+     */
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
@@ -140,12 +178,15 @@ public class NavireServlet extends HttpServlet {
 
             switch (action) {
                 case "insert":
+                    // Insertion d'un nouveau navire
                     insertNavire(request, response);
                     break;
                 case "update":
+                    // Modification d'un navire existant
                     updateNavire(request, response);
                     break;
                 default:
+                    // Par défaut, liste des navires
                     listNavires(request, response);
                     break;
             }
@@ -154,6 +195,10 @@ public class NavireServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Insère un nouveau navire en base, gère la création ou sélection de l'armateur et du consignataire.
+     * L'armateur est obligatoire, le consignataire est facultatif.
+     */
     private void insertNavire(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
         String numeroNavire = request.getParameter("numeroNavire");
@@ -163,7 +208,7 @@ public class NavireServlet extends HttpServlet {
         double volumeNavire = parseDoubleOrZero(request.getParameter("volumeNavire"));
         double tiranEauNavire = parseDoubleOrZero(request.getParameter("tiranEauNavire"));
 
-        // Armateur (obligatoire)
+        // Traitement de l'armateur (obligatoire : sélection ou création)
         String armateurValue = request.getParameter("armateur");
         Armateur armateur = null;
         try {
@@ -184,6 +229,7 @@ public class NavireServlet extends HttpServlet {
         } catch (Exception e) {
             throw new ServletException("Erreur lors de la récupération ou création de l'armateur", e);
         }
+        // Vérifie qu'un armateur est bien sélectionné
         if (armateur == null) {
             try {
                 List<Consignataire> consignataires = consignataireDAO.getAllConsignataires();
@@ -198,7 +244,7 @@ public class NavireServlet extends HttpServlet {
             return;
         }
 
-        // Consignataire (facultatif)
+        // Traitement du consignataire (facultatif : sélection ou création)
         String consignataireValue = request.getParameter("consignataire");
         Consignataire consignataire = null;
         try {
@@ -222,6 +268,7 @@ public class NavireServlet extends HttpServlet {
             throw new ServletException("Erreur lors de la récupération ou création du consignataire", e);
         }
 
+        // Création du navire et enregistrement en base
         Navire newNavire = new Navire();
         newNavire.setNumeroNavire(numeroNavire);
         newNavire.setNomNavire(nomNavire);
@@ -236,6 +283,9 @@ public class NavireServlet extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/navire?action=list");
     }
 
+    /**
+     * Met à jour un navire existant en base, gère la création ou sélection de l'armateur et du consignataire.
+     */
     private void updateNavire(HttpServletRequest request, HttpServletResponse response)
             throws SQLException, IOException, ServletException {
         String numeroNavire = request.getParameter("numeroNavire");
@@ -318,6 +368,9 @@ public class NavireServlet extends HttpServlet {
         response.sendRedirect(request.getContextPath() + "/navire?action=list");
     }
 
+    /**
+     * Utilitaire pour parser un double, retourne 0 si la valeur est invalide ou absente.
+     */
     private double parseDoubleOrZero(String val) {
         try {
             return Double.parseDouble(val);

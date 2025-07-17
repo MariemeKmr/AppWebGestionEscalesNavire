@@ -77,7 +77,7 @@
                         <td>
                             <span class="badge
                                 <c:choose>
-                                    <c:when test="${bon.etat eq 'Validé' || bon.etat eq 'Valide'}">badge-success</c:when>
+                                    <c:when test="${bon.etat eq 'Valide'}">badge-success</c:when>
                                     <c:when test="${bon.etat eq 'Saisie'}">badge-warning</c:when>
                                     <c:otherwise>badge-secondary</c:otherwise>
                                 </c:choose>">${bon.etat}</span>

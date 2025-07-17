@@ -24,43 +24,86 @@
         <c:if test="${empty escalesArrivees}">
             <p>Aucun navire attendu cette semaine.</p>
         </c:if>
-        <ul>
-            <c:forEach var="escale" items="${escalesArrivees}">
-                <li>
-                    <strong>${escale.myNavire.nomNavire}</strong>
-                    — arrivée prévue le <fmt:formatDate value="${escale.debutEscale}" pattern="dd/MM/yyyy"/>
-                    (Escale n°${escale.numeroEscale})
-                </li>
-            </c:forEach>
-        </ul>
+        <div>
+          <c:forEach var="escale" items="${escalesArrivees}">
+            <div class="notification-card notification-arrivee">
+              <span class="notification-icon"><i class="fas fa-ship"></i></span>
+              <div class="notification-content">
+                <div class="notification-title">
+                  <c:choose>
+                    <c:when test="${not empty escale.myNavire}">
+                      ${escale.myNavire.nomNavire}
+                    </c:when>
+                    <c:otherwise>
+                      <span class="text-danger">Navire inconnu</span>
+                    </c:otherwise>
+                  </c:choose>
+                  <span class="notification-numero">(Escale n°${escale.numeroEscale})</span>
+                </div>
+                <div class="notification-time">
+                  Arrivée prévue le <fmt:formatDate value="${escale.debutEscale}" pattern="dd/MM/yyyy"/>
+                </div>
+              </div>
+            </div>
+          </c:forEach>
+        </div>
 
         <h3>Navires partis cette semaine</h3>
         <c:if test="${empty escalesParties}">
             <p>Aucun navire n'a quitté le port cette semaine.</p>
         </c:if>
-        <ul>
-            <c:forEach var="escale" items="${escalesParties}">
-                <li>
-                    <strong>${escale.myNavire.nomNavire}</strong>
-                    — départ le <fmt:formatDate value="${escale.finEscale}" pattern="dd/MM/yyyy"/>
-                    (Escale n°${escale.numeroEscale})
-                </li>
-            </c:forEach>
-        </ul>
+        <div>
+          <c:forEach var="escale" items="${escalesParties}">
+            <div class="notification-card notification-partie">
+              <span class="notification-icon"><i class="fas fa-sign-out-alt"></i></span>
+              <div class="notification-content">
+                <div class="notification-title">
+                  <c:choose>
+                    <c:when test="${not empty escale.myNavire}">
+                      ${escale.myNavire.nomNavire}
+                    </c:when>
+                    <c:otherwise>
+                      <span class="text-danger">Navire inconnu</span>
+                    </c:otherwise>
+                  </c:choose>
+                  <span class="notification-numero">(Escale n°${escale.numeroEscale})</span>
+                </div>
+                <div class="notification-time">
+                  Départ le <fmt:formatDate value="${escale.finEscale}" pattern="dd/MM/yyyy"/>
+                </div>
+              </div>
+            </div>
+          </c:forEach>
+        </div>
 
-		<h3>Escales terminées à facturer</h3>
-		<c:if test="${empty escalesNonFacturees}">
-		    <p>Aucune escale terminée à facturer.</p>
-		</c:if>
-		<ul>
-		  <c:forEach var="escale" items="${escalesNonFacturees}">
-		    <li>
-		      <strong>${escale.myNavire.nomNavire}</strong>
-		      — terminée le <fmt:formatDate value="${escale.finEscale}" pattern="dd/MM/yyyy"/>
-		      (Escale n°${escale.numeroEscale}) <span class="badge bg-warning text-dark">À facturer</span>
-		    </li>
-		  </c:forEach>
-		</ul>
+        <h3>Escales terminées à facturer</h3>
+        <c:if test="${empty escalesNonFacturees}">
+            <p>Aucune escale terminée à facturer.</p>
+        </c:if>
+        <div>
+          <c:forEach var="escale" items="${escalesNonFacturees}">
+            <div class="notification-card notification-facture">
+              <span class="notification-icon"><i class="fas fa-file-invoice-dollar"></i></span>
+              <div class="notification-content">
+                <div class="notification-title">
+                  <c:choose>
+                    <c:when test="${not empty escale.myNavire}">
+                      ${escale.myNavire.nomNavire}
+                    </c:when>
+                    <c:otherwise>
+                      <span class="text-danger">Navire inconnu</span>
+                    </c:otherwise>
+                  </c:choose>
+                  <span class="notification-numero">(Escale n°${escale.numeroEscale})</span>
+                  <span class="badge bg-warning text-dark ms-2">À facturer</span>
+                </div>
+                <div class="notification-time">
+                  Terminée le <fmt:formatDate value="${escale.finEscale}" pattern="dd/MM/yyyy"/>
+                </div>
+              </div>
+            </div>
+          </c:forEach>
+        </div>
     </div>
 
     <jsp:include page="/includes/footer.jsp"/>

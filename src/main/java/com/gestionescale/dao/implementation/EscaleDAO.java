@@ -10,10 +10,22 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * DAO pour la gestion des Escales.
+ * Toutes les opérations CRUD et requêtes SQL complexes liées à l'entité Escale passent par cette classe.
+ * J'ai aussi centralisé ici les méthodes utiles aux statistiques et à la logique de gestion portuaire.
+ * (c) Marieme KAMARA
+ */
 public class EscaleDAO implements IEscaleDAO {
 
+    // J'utilise le DAO navire pour enrichir les objets Escale avec leur navire associé
     private NavireDAO navireDAO = new NavireDAO();
 
+    /**
+     * Ajoute une escale dans la base de données.
+     * @param escale L'escale à ajouter
+     * @throws SQLException en cas d'erreur SQL
+     */
     @Override
     public void ajouterEscale(Escale escale) throws SQLException {
         String sql = "INSERT INTO Escale (numeroEscale, debutEscale, finEscale, numeroNavire, nomNavire, prixUnitaire, prixSejour, idConsignataire, zone, terminee, facturee) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
@@ -34,6 +46,11 @@ public class EscaleDAO implements IEscaleDAO {
         }
     }
 
+    /**
+     * Modifie une escale existante.
+     * @param escale L'escale à modifier
+     * @throws SQLException en cas d'erreur SQL
+     */
     public void modifierEscale(Escale escale) throws SQLException {
         String sql = "UPDATE Escale SET debutEscale = ?, finEscale = ?, numeroNavire = ?, prixUnitaire = ?, prixSejour = ?, idConsignataire = ?, zone = ?, terminee = ?, facturee = ? WHERE numeroEscale = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -52,6 +69,12 @@ public class EscaleDAO implements IEscaleDAO {
         }
     }
 
+    /**
+     * Recherche une escale par son numéro.
+     * @param numeroEscale le numéro unique de l'escale
+     * @return l'objet Escale ou null si non trouvé
+     * @throws SQLException en cas d'erreur SQL
+     */
     @Override
     public Escale getEscaleParNumero(String numeroEscale) throws SQLException {
         String sql = "SELECT * FROM Escale WHERE numeroEscale = ?";
@@ -67,6 +90,11 @@ public class EscaleDAO implements IEscaleDAO {
         return escale;
     }
 
+    /**
+     * Liste toutes les escales enregistrées.
+     * @return Liste de Escale
+     * @throws SQLException en cas d'erreur SQL
+     */
     @Override
     public List<Escale> getToutesLesEscales() throws SQLException {
         List<Escale> liste = new ArrayList<>();
@@ -82,7 +110,10 @@ public class EscaleDAO implements IEscaleDAO {
         return liste;
     }
     
- // Escales ayant un bon d'entrée et PAS de bon de sortie
+    /**
+     * Retourne les escales ayant un bon d'entrée mais PAS de bon de sortie.
+     * Pratique pour le suivi des opérations non clôturées.
+     */
     public List<Escale> getEscalesAvecBonEntreeSansBonSortie() throws SQLException {
         List<Escale> liste = new ArrayList<>();
         String sql = "SELECT * FROM escale e " +
@@ -99,6 +130,12 @@ public class EscaleDAO implements IEscaleDAO {
         return liste;
     }
 
+    /**
+     * Suppression sécurisée d'une escale.
+     * L'escale ne peut être supprimée que si elle n'a aucun bon de pilotage associé.
+     * @param numeroEscale le numéro unique de l'escale
+     * @throws SQLException en cas d'erreur SQL
+     */
     public void supprimerEscale(String numeroEscale) throws SQLException {
         Connection conn = null;
         PreparedStatement checkBonPilotage = null;
@@ -131,6 +168,9 @@ public class EscaleDAO implements IEscaleDAO {
         }
     }
 
+    /**
+     * Nombre d'escales pour un mois donné (utile pour les stats mensuelles).
+     */
     public int compterEscalesParMois(java.sql.Date date) throws SQLException {
         String sql = "SELECT COUNT(*) FROM Escale WHERE YEAR(debutEscale) = YEAR(?) AND MONTH(debutEscale) = MONTH(?)";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -145,6 +185,11 @@ public class EscaleDAO implements IEscaleDAO {
         }
     }
 
+    /**
+     * Marque une escale comme facturée.
+     * @param numeroEscale le numéro d'escale concerné
+     * @throws SQLException en cas d'erreur SQL
+     */
     public void marquerFacturee(String numeroEscale) throws SQLException {
         String sql = "UPDATE Escale SET facturee = 1 WHERE numeroEscale = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -154,6 +199,9 @@ public class EscaleDAO implements IEscaleDAO {
         }
     }
 
+    /**
+     * Liste toutes les escales terminées mais non facturées (ancienne version).
+     */
     public List<Escale> findEscalesTermineesSansFacture() throws SQLException {
         List<Escale> liste = new ArrayList<>();
         String sql = "SELECT * FROM Escale e " +
@@ -170,7 +218,9 @@ public class EscaleDAO implements IEscaleDAO {
         return liste;
     }
 
-    // Escales clôturées ET facturées (doivent avoir un bon de sortie ET une facture)
+    /**
+     * Liste des escales clôturées ET facturées entre deux dates.
+     */
     public List<Escale> getClotureesFacturees(Date debut, Date fin) throws SQLException {
         List<Escale> list = new ArrayList<>();
         String sql = "SELECT e.* FROM Escale e " +
@@ -193,7 +243,9 @@ public class EscaleDAO implements IEscaleDAO {
         return list;
     }
 
-    // Escales clôturées NON facturées (bon de sortie, PAS de facture)
+    /**
+     * Liste des escales clôturées mais non facturées sur une période donnée.
+     */
     public List<Escale> getClotureesNonFacturees(Date debut, Date fin) throws SQLException {
         List<Escale> list = new ArrayList<>();
         String sql = "SELECT e.* FROM Escale e " +
@@ -213,7 +265,9 @@ public class EscaleDAO implements IEscaleDAO {
         return list;
     }
 
-    // Escales NON clôturées (PAS de bon de sortie)
+    /**
+     * Liste des escales non clôturées (pas de bon de sortie).
+     */
     public List<Escale> getNonCloturees(Date debut, Date fin) throws SQLException {
         List<Escale> list = new ArrayList<>();
         String sql = "SELECT * FROM Escale e " +
@@ -233,8 +287,12 @@ public class EscaleDAO implements IEscaleDAO {
     }
 
     // ---------------------------------------------------------------------
+    // Méthodes utilitaires
 
-    // Utilitaire de mapping pour éviter la duplication de code
+    /**
+     * Méthode utilitaire pour transformer une ligne SQL en objet Escale,
+     * en allant chercher le navire associé (et donc le consignataire aussi).
+     */
     private Escale mapEscale(ResultSet rs) throws SQLException {
         Escale escale = new Escale();
         escale.setNumeroEscale(rs.getString("numeroEscale"));
@@ -254,7 +312,13 @@ public class EscaleDAO implements IEscaleDAO {
         return escale;
     }
 
-    // Pour l'exemple, récupération de la facture liée à une escale (si besoin)
+    /**
+     * Récupère la facture liée à une escale (si besoin).
+     * @param numeroEscale le numéro d'escale
+     * @param conn connexion SQL à réutiliser
+     * @return la Facture associée ou null
+     * @throws SQLException en cas d'erreur SQL
+     */
     private Facture getFactureByNumeroEscale(String numeroEscale, Connection conn) throws SQLException {
         String sql = "SELECT * FROM facture WHERE numero_escale = ?";
         try (PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -264,7 +328,7 @@ public class EscaleDAO implements IEscaleDAO {
                     Facture facture = new Facture();
                     facture.setId(rs.getInt("id"));
                     facture.setNumeroFacture(rs.getString("numero_facture"));
-                    // ... compléter selon ton modèle Facture ...
+                    // ... compléter selon le modèle Facture ...
                     return facture;
                 }
             }
@@ -272,6 +336,9 @@ public class EscaleDAO implements IEscaleDAO {
         return null;
     }
 
+    /**
+     * Liste les escales sans bon de sortie.
+     */
     public List<Escale> getEscalesSansBonSortie() throws SQLException {
         List<Escale> liste = new ArrayList<>();
         String sql = "SELECT * FROM escale e WHERE NOT EXISTS (" +
@@ -287,6 +354,12 @@ public class EscaleDAO implements IEscaleDAO {
         return liste;
     }
 
+    /**
+     * Met à jour le statut 'terminée' d'une escale.
+     * @param numeroEscale le numéro d'escale
+     * @param terminee true si terminée
+     * @throws SQLException en cas d'erreur SQL
+     */
     public void updateTerminee(String numeroEscale, boolean terminee) throws SQLException {
         String sql = "UPDATE Escale SET terminee = ? WHERE numeroEscale = ?";
         try (Connection conn = DatabaseConnection.getConnection();
@@ -297,6 +370,11 @@ public class EscaleDAO implements IEscaleDAO {
         }
     }
 
+    /**
+     * Liste des escales terminées (celles qui ont eu un bon de sortie) mais non facturées.
+     * @return Liste de Escale
+     * @throws SQLException en cas d'erreur SQL
+     */
     @Override
     public List<Escale> getEscalesTermineesSansFacture() throws SQLException {
         List<Escale> escales = new ArrayList<>();
@@ -315,21 +393,25 @@ public class EscaleDAO implements IEscaleDAO {
         return escales;
     }
 	
-	//Escales terminées = celles qui ont un bon de sortie
+    /**
+     * Liste toutes les escales terminées (ayant eu un bon de sortie).
+     */
 	public List<Escale> getEscalesTerminees() throws SQLException {
-	 List<Escale> liste = new ArrayList<>();
-	 String sql = "SELECT * FROM Escale e WHERE EXISTS (SELECT 1 FROM bonpilotage b WHERE b.numeroEscale = e.numeroEscale AND b.codeTypeMvt = 'SORTIE')";
-	 try (Connection conn = DatabaseConnection.getConnection();
-	      PreparedStatement stmt = conn.prepareStatement(sql);
-	      ResultSet rs = stmt.executeQuery()) {
-	     while (rs.next()) {
-	         liste.add(mapEscale(rs));
-	     }
-	 }
-	 return liste;
+	    List<Escale> liste = new ArrayList<>();
+	    String sql = "SELECT * FROM Escale e WHERE EXISTS (SELECT 1 FROM bonpilotage b WHERE b.numeroEscale = e.numeroEscale AND b.codeTypeMvt = 'SORTIE')";
+	    try (Connection conn = DatabaseConnection.getConnection();
+	         PreparedStatement stmt = conn.prepareStatement(sql);
+	         ResultSet rs = stmt.executeQuery()) {
+	        while (rs.next()) {
+	            liste.add(mapEscale(rs));
+	        }
+	    }
+	    return liste;
 	}
 	
-	// Escales prévues
+    /**
+     * Liste les escales prévues (dont le début est dans le futur).
+     */
 	public List<Escale> getEscalesPrevues() throws SQLException {
 	    List<Escale> liste = new ArrayList<>();
 	    String sql = "SELECT * FROM Escale WHERE debutEscale > CURRENT_DATE";
@@ -343,7 +425,9 @@ public class EscaleDAO implements IEscaleDAO {
 	    return liste;
 	}
 
-	// Escales en cours
+    /**
+     * Liste les escales en cours (débuté mais pas encore terminé ni clôturé).
+     */
 	public List<Escale> getEscalesEnCours() throws SQLException {
 	    List<Escale> liste = new ArrayList<>();
 	    String sql = "SELECT * FROM Escale WHERE debutEscale <= CURRENT_DATE AND finEscale >= CURRENT_DATE " +
@@ -358,7 +442,9 @@ public class EscaleDAO implements IEscaleDAO {
 	    return liste;
 	}
 	
-	// Retourner les escales dont le début ou la fin est dans la période
+    /**
+     * Liste les escales dont le début ou la fin se situe dans une période donnée.
+     */
 	public List<Escale> getByPeriode(java.sql.Date debut, java.sql.Date fin) throws SQLException {
 	    List<Escale> escales = new ArrayList<>();
 	    String sql = "SELECT * FROM Escale WHERE (debutEscale BETWEEN ? AND ?) OR (finEscale BETWEEN ? AND ?)";
@@ -377,7 +463,7 @@ public class EscaleDAO implements IEscaleDAO {
 	}
 	
     /**
-     * Escales dont le debutEscale est entre deux dates (arrivées prévues)
+     * Liste les escales dont le debutEscale est entre deux dates (arrivées prévues).
      */
     public List<Escale> getEscalesArrivantEntre(Date debut, Date fin) throws SQLException {
         List<Escale> liste = new ArrayList<>();
@@ -395,7 +481,7 @@ public class EscaleDAO implements IEscaleDAO {
     }
 
     /**
-     * Escales dont le finEscale est entre deux dates (navires partis)
+     * Liste les escales dont le finEscale est entre deux dates (navires partis).
      */
     public List<Escale> getEscalesPartiesEntre(Date debut, Date fin) throws SQLException {
         List<Escale> liste = new ArrayList<>();

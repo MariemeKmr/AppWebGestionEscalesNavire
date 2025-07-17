@@ -80,7 +80,7 @@
                 onclick="toggleEtatBon()"
                 onkeydown="if(event.key==='Enter' || event.key===' '){toggleEtatBon();event.preventDefault();}">
                 <span class="toggle-label-etat" id="etatToggleLabel">
-                    ${empty bon.etat || bon.etat eq 'Saisie' ? 'Saisie' : 'Validé'}
+                    ${empty bon.etat || bon.etat eq 'Saisie' ? 'Saisie' : 'Valide'}
                 </span>
             </span>
             <input type="hidden" name="etat" id="etatInput"
@@ -119,8 +119,8 @@ function toggleEtatBon() {
     if(isSaisie) {
         btn.classList.remove('saisie');
         btn.classList.add('valide');
-        label.textContent = 'Validé';
-        input.value = 'Validé';
+        label.textContent = 'Valide';
+        input.value = 'Valide';
     } else {
         btn.classList.remove('valide');
         btn.classList.add('saisie');

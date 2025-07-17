@@ -13,15 +13,27 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Servlet de gestion des bons de pilotage.
+ * Cette servlet permet l'ajout, la modification, la suppression,
+ * la consultation (liste & détails) des bons de pilotage via la couche service.
+ * Elle applique aussi les règles métier liées à l'enchaînement des bons d'entrée/sortie.
+ * (c) Marieme KAMARA
+ */
 public class BonPilotageServlet extends HttpServlet {
+    // Service de gestion des bons de pilotage
     private BonPilotageService service = new BonPilotageService();
 
+    /**
+     * Gère les requêtes GET pour la consultation, l'ajout, la modification, la suppression
+     * et la validation des bons de pilotage.
+     */
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         String path = req.getPathInfo();
         try {
             if (path == null || path.equals("/") || path.equals("/list")) {
-                // Recherche dynamique : si paramètre search présent, filtrer
+                // Affichage de la liste (ou recherche) des bons de pilotage
                 String search = req.getParameter("search");
                 List<BonPilotage> bons = (search != null && !search.isEmpty())
                         ? service.rechercherMulti(search)
@@ -29,9 +41,11 @@ public class BonPilotageServlet extends HttpServlet {
                 req.setAttribute("bons", bons);
                 req.getRequestDispatcher("/jsp/bonpilotage/list.jsp").forward(req, resp);
             } else if (path.equals("/new")) {
+                // Affichage du formulaire de création d'un bon de pilotage
                 List<Escale> escalesEnCours = new EscaleDAO().getEscalesSansBonSortie();
                 List<TypeMouvement> allTypes = new TypeMouvementDAO().getTousLesTypesMouvement();
                 List<TypeMouvement> typesMouvement = new ArrayList<>();
+                // On ne garde que certains types de mouvement
                 for (TypeMouvement t : allTypes) {
                     String lib = t.getLibelleTypeMvt();
                     if (
@@ -49,6 +63,7 @@ public class BonPilotageServlet extends HttpServlet {
                 req.setAttribute("escalesEnCours", escalesEnCours);
                 req.getRequestDispatcher("/jsp/bonpilotage/form.jsp").forward(req, resp);
             } else if (path.equals("/edit")) {
+                // Préparation du formulaire de modification d'un bon
                 int id = Integer.parseInt(req.getParameter("id"));
                 BonPilotage bon = service.getBonPilotageParId(id);
                 List<Escale> escalesEnCours = new EscaleDAO().getEscalesSansBonSortie();
@@ -72,24 +87,28 @@ public class BonPilotageServlet extends HttpServlet {
                 req.setAttribute("escalesEnCours", escalesEnCours);
                 req.getRequestDispatcher("/jsp/bonpilotage/form.jsp").forward(req, resp);
             } else if (path.equals("/view")) {
+                // Visualisation d'un bon de pilotage
                 int id = Integer.parseInt(req.getParameter("id"));
                 BonPilotage bon = service.getBonPilotageParId(id);
                 req.setAttribute("bon", bon);
                 req.getRequestDispatcher("/jsp/bonpilotage/view.jsp").forward(req, resp);
             } else if (path.equals("/delete")) {
+                // Suppression d'un bon de pilotage
                 int id = Integer.parseInt(req.getParameter("id"));
                 service.supprimerBonPilotage(id);
                 resp.sendRedirect(req.getContextPath() + "/bonpilotage/list");
             } else if (path.equals("/valider")) {
+                // Validation d'un bon de pilotage (état "Validé")
                 int id = Integer.parseInt(req.getParameter("id"));
                 service.validerBonPilotage(id);
                 resp.sendRedirect(req.getContextPath() + "/bonpilotage/list");
             } else {
+                // Si l'action n'est pas reconnue, on retourne une erreur 404
                 resp.sendError(HttpServletResponse.SC_NOT_FOUND);
             }
         } catch (Exception e) {
+            // Gestion des erreurs : message affiché dans la liste
             req.setAttribute("error", "Erreur : " + e.getMessage());
-            // On revient à la liste avec le message d'erreur
             try {
                 List<BonPilotage> bons = service.getTousLesBonsPilotage();
                 req.setAttribute("bons", bons);
@@ -100,20 +119,24 @@ public class BonPilotageServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Gère les requêtes POST pour l'ajout et la modification d'un bon de pilotage.
+     */
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.setCharacterEncoding("UTF-8");
+        req.setCharacterEncoding("UTF-8"); // Encodage UTF-8 pour les formulaires
         String path = req.getPathInfo();
         try {
             if (path == null) path = "";
             if (path.equals("/insert")) {
+                // Ajout d'un nouveau bon de pilotage, avec vérification métier
                 BonPilotage bon = remplirBonDepuisRequest(req, false);
                 bon.setEtat("Saisie");
                 String libelleMvt = bon.getTypeMouvement().getLibelleTypeMvt();
                 String codeTypeMvt = bon.getTypeMouvement().getCodeTypeMvt();
                 String numeroEscale = bon.getMonEscale().getNumeroEscale();
 
-                // Règle 1 : Impossible d'ajouter un bon autre que "Entree au port" sans bon d'entrée
+                // Règle métier : on ne peut pas ajouter certains bons avant l'entrée
                 if (!"Entree au port".equalsIgnoreCase(libelleMvt)) {
                     boolean aEntree = service.existeBonDeCeTypePourEscale(numeroEscale, "ENTREE");
                     if (!aEntree) {
@@ -123,7 +146,7 @@ public class BonPilotageServlet extends HttpServlet {
                     }
                 }
 
-                // Règle 2 : Impossible d'ajouter un bon si "Sortie du port" existe déjà
+                // Règle métier : pas de bon après la sortie
                 boolean aSortie = service.existeBonDeCeTypePourEscale(numeroEscale, "SORTIE");
                 if (aSortie) {
                     req.setAttribute("error", "Impossible d'ajouter un bon : l'escale est déjà terminée (bon de SORTIE existant).");
@@ -131,7 +154,7 @@ public class BonPilotageServlet extends HttpServlet {
                     return;
                 }
 
-                // Règle 3 : Impossible d'avoir plusieurs bons d'entrée ou de sortie
+                // Règle métier : unicité sur entrée/sortie pour chaque escale
                 if ("Entree au port".equalsIgnoreCase(libelleMvt) || "Sortie du port".equalsIgnoreCase(libelleMvt)) {
                     boolean existe = service.existeBonDeCeTypePourEscale(numeroEscale, codeTypeMvt);
                     if (existe) {
@@ -144,11 +167,11 @@ public class BonPilotageServlet extends HttpServlet {
                 service.ajouterBonPilotage(bon);
                 resp.sendRedirect(req.getContextPath() + "/bonpilotage/list");
             } else if (path.equals("/update")) {
+                // Modification d'un bon de pilotage existant
                 BonPilotage bon = remplirBonDepuisRequest(req, true);
-                // CORRECTION IMPORTANTE : on récupère la valeur de l'état envoyée par le formulaire !
                 String etatParam = req.getParameter("etat");
                 if (etatParam == null || etatParam.trim().isEmpty()) {
-                    bon.setEtat("Saisie"); // Valeur par défaut si jamais le champ est manquant
+                    bon.setEtat("Saisie");
                 } else {
                     bon.setEtat(etatParam);
                 }
@@ -163,6 +186,13 @@ public class BonPilotageServlet extends HttpServlet {
         }
     }
 
+    /**
+     * Remplit un objet BonPilotage à partir des paramètres reçus par le formulaire HTTP.
+     * @param req La requête HTTP
+     * @param isUpdate true si modification (false pour création)
+     * @return Un objet BonPilotage avec les champs renseignés
+     * @throws Exception si un champ pose problème
+     */
     private BonPilotage remplirBonDepuisRequest(HttpServletRequest req, boolean isUpdate) throws Exception {
         BonPilotage bon = new BonPilotage();
         if (isUpdate && req.getParameter("idMouvement") != null && !req.getParameter("idMouvement").isEmpty()) {
@@ -198,11 +228,15 @@ public class BonPilotageServlet extends HttpServlet {
         }
         bon.setMonEscale(escale);
 
-        // NE PAS GÉRER ETAT ICI (on le fait dans doPost pour insert/update)
+        // L'état est géré dans doPost
 
         return bon;
     }
 
+    /**
+     * Prépare les listes nécessaires pour le formulaire de bon de pilotage
+     * (types de mouvement filtrés + escales en cours)
+     */
     private void forwardToFormWithLists(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         try {
             List<Escale> escalesEnCours = new EscaleDAO().getEscalesSansBonSortie();
